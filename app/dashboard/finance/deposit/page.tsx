@@ -69,7 +69,8 @@ function DepositContent() {
       setCopiedChain(chain)
       setTimeout(() => setCopiedChain(null), 2000)
     } catch {
-      alert('Failed to copy. Address: ' + address)
+      // Clipboard API failed (e.g. insecure context); address is already visible on screen
+      setCopiedChain('error')
     }
   }
 
