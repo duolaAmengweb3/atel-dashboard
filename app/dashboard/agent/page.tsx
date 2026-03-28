@@ -58,10 +58,14 @@ function AgentContent() {
 
   const [agent, setAgent] = useState<Agent | null>(null)
   const [trustHistory, setTrustHistory] = useState<TrustEvent[]>([])
+  const [mounted, setMounted] = useState(false)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
+  useEffect(() => { setMounted(true) }, [])
+
   useEffect(() => {
+    if (!mounted) return
     if (!did) {
       setLoading(false)
       return
@@ -92,7 +96,15 @@ function AgentContent() {
       }
     }
     fetchData()
-  }, [did])
+  }, [did, mounted])
+
+  if (!mounted || loading) {
+    return (
+      <div className="px-4 lg:px-6 py-6">
+        <p className="text-muted-foreground">Loading...</p>
+      </div>
+    )
+  }
 
   if (!did) {
     return (
@@ -106,14 +118,6 @@ function AgentContent() {
         <p className="text-sm text-muted-foreground">
           Append <code className="bg-muted px-1 rounded">?did=did:atel:...</code> to the URL to look up any agent.
         </p>
-      </div>
-    )
-  }
-
-  if (loading) {
-    return (
-      <div className="px-4 lg:px-6 py-6">
-        <p className="text-muted-foreground">Loading agent profile...</p>
       </div>
     )
   }
@@ -245,10 +249,10 @@ function AgentContent() {
                 {trustHistory.slice(0, 20).map((evt, i) => (
                   <TableRow key={i}>
                     <TableCell className="capitalize">{evt.type}</TableCell>
-                    <TableCell className={evt.delta >= 0 ? 'text-green-500' : 'text-red-500'}>
-                      {evt.delta >= 0 ? '+' : ''}{evt.delta.toFixed(2)}
+                    <TableCell className={(Number(evt.delta) || 0) >= 0 ? 'text-green-500' : 'text-red-500'}>
+                      {(Number(evt.delta) || 0) >= 0 ? '+' : ''}{(Number(evt.delta) || 0).toFixed(2)}
                     </TableCell>
-                    <TableCell>{evt.scoreAfter?.toFixed(2) ?? '-'}</TableCell>
+                    <TableCell>{evt.scoreAfter != null ? Number(evt.scoreAfter).toFixed(2) : '-'}</TableCell>
                     <TableCell className="text-muted-foreground text-xs">
                       {evt.createdAt ? new Date(evt.createdAt).toLocaleString() : '-'}
                     </TableCell>
