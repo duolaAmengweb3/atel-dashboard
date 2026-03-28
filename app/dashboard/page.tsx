@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Area, AreaChart, CartesianGrid, XAxis, YAxis, ResponsiveContainer, Tooltip } from "recharts"
+import { LoginPrompt } from '@/components/login-prompt'
 import { SectionCards } from '@/components/section-cards'
 import {
   Card,
@@ -28,13 +29,7 @@ function DashboardContent() {
   const { t } = useI18n()
 
   if (!did) {
-    return (
-      <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-        <div className="px-4 lg:px-6 text-muted-foreground">
-          {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginOrDid")} <code className="bg-muted px-1 rounded">?did=your-did</code> {t("common.toTheUrl")}
-        </div>
-      </div>
-    )
+    return <LoginPrompt />
   }
 
   const [loading, setLoading] = useState(true)

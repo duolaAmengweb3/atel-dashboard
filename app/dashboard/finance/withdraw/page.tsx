@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useState } from 'react'
+import { LoginPrompt } from '@/components/login-prompt'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -27,11 +28,7 @@ function WithdrawContent() {
   const { t } = useI18n()
 
   if (!auth) {
-    return (
-      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginToView")}
-      </div>
-    )
+    return <LoginPrompt />
   }
 
   const did = auth.did

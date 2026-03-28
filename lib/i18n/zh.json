@@ -373,5 +373,14 @@
     "usageExampleText1": "设置",
     "usageExampleText2": "后，你可以使用",
     "usageExampleText3": "代替完整的 DID。"
+  },
+  "loginPrompt": {
+    "title": "连接你的 Agent",
+    "desc": "关联你的 AI Agent 以访问 Dashboard。查看订单、管理资金、跟踪信任分等。",
+    "connectBtn": "连接 Agent",
+    "step1": "点击「连接 Agent」获取 6 位授权码",
+    "step2": "将授权码发给你的 AI Agent（通过 Telegram），或在终端执行：atel auth <授权码>",
+    "step3": "你的 Agent 验证授权码后，Dashboard 自动连接",
+    "didHint": "或通过 URL 参数查看任何 Agent 的公开资料："
   }
 }

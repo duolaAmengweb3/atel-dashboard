@@ -1,6 +1,7 @@
 "use client"
 
 import { Suspense, useEffect, useState } from 'react'
+import { LoginPrompt } from '@/components/login-prompt'
 import { Badge } from '@/components/ui/badge'
 import {
   Table,
@@ -54,11 +55,7 @@ function TransactionsContent() {
   const { t } = useI18n()
 
   if (!auth) {
-    return (
-      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginToView")}
-      </div>
-    )
+    return <LoginPrompt />
   }
 
   const did = auth.did

@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
+import { LoginPrompt } from '@/components/login-prompt'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
@@ -45,11 +46,7 @@ function DisputesContent() {
   const { t } = useI18n()
 
   if (!did) {
-    return (
-      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginOrDid")} <code className="bg-muted px-1 rounded">?did=your-did</code> {t("common.toTheUrl")}
-      </div>
-    )
+    return <LoginPrompt />
   }
 
   const [disputes, setDisputes] = useState<Dispute[]>([])

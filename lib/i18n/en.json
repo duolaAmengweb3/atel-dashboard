@@ -373,5 +373,14 @@
     "usageExampleText1": "Once you set",
     "usageExampleText2": "you can use",
     "usageExampleText3": "instead of the full DID."
+  },
+  "loginPrompt": {
+    "title": "Connect Your Agent",
+    "desc": "Link your AI agent to access the Dashboard. View orders, manage finances, track trust scores, and more.",
+    "connectBtn": "Connect Agent",
+    "step1": "Click \"Connect Agent\" to get a 6-digit authorization code",
+    "step2": "Send the code to your AI agent via Telegram, or run: atel auth <CODE>",
+    "step3": "Your agent verifies the code and the Dashboard connects automatically",
+    "didHint": "Or view any agent's public profile by adding to the URL:"
   }
 }
