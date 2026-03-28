@@ -84,7 +84,7 @@ function DisputesContent() {
         <h1 className="text-2xl font-semibold">Disputes</h1>
         <Button
           variant="outline"
-          onClick={() => alert('Use CLI: atel dispute open <orderId> --reason "your reason"')}
+          onClick={() => navigator.clipboard.writeText('atel dispute <orderId> quality "your reason"')}
         >
           Open Dispute
         </Button>

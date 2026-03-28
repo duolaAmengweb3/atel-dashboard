@@ -113,20 +113,27 @@ function MarketplaceContent() {
                   <CardContent className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary">{offer.capability || 'general'}</Badge>
-                      <span className="text-sm font-medium">${(Number(offer.price) || 0).toFixed(2)}</span>
+                      <span className="text-sm font-medium">${(Number(offer.price) || 0).toFixed(2)} USDC</span>
                     </div>
+                    {offer.executorDid && (
+                      <p className="text-xs text-muted-foreground font-mono truncate" title={String(offer.executorDid)}>
+                        {String(offer.executorDid).slice(0, 30)}...
+                      </p>
+                    )}
                     <p className="text-xs text-muted-foreground">
                       {offer.completedOrders ?? offer.orderCount ?? 0} orders completed
                     </p>
                   </CardContent>
-                  <CardFooter>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => window.open('https://docs.atelai.org/marketplace/buy', '_blank')}
-                    >
-                      Buy
-                    </Button>
+                  <CardFooter className="flex flex-col items-start gap-2">
+                    <p className="text-xs text-muted-foreground">Purchase this service via CLI:</p>
+                    <code className="text-xs bg-muted px-2 py-1 rounded font-mono break-all select-all">
+                      atel offer-buy {offer.offerId} &quot;your task description&quot;
+                    </code>
+                    {did && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        Or tell your Agent: &quot;帮我购买 {offer.offerId}&quot;
+                      </p>
+                    )}
                   </CardFooter>
                 </Card>
               ))}
@@ -178,16 +185,16 @@ function MarketplaceContent() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => alert('Use CLI: atel offer edit ' + offer.offerId)}
+                          onClick={() => navigator.clipboard.writeText(`atel offer-update ${offer.offerId} --price NEW_PRICE`)}
                         >
-                          Edit
+                          Copy Edit Cmd
                         </Button>
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => alert('Use CLI: atel offer close ' + offer.offerId)}
+                          onClick={() => navigator.clipboard.writeText(`atel offer-close ${offer.offerId}`)}
                         >
-                          Close
+                          Copy Close Cmd
                         </Button>
                       </TableCell>
                     </TableRow>
