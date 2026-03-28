@@ -1,17 +1,15 @@
 "use client"
 
 import {
-  IconCreditCard,
   IconDotsVertical,
   IconLogout,
-  IconNotification,
-  IconUserCircle,
+  IconPlus,
+  IconCheck,
 } from "@tabler/icons-react"
 
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
 } from '@/components/ui/avatar'
 import {
   DropdownMenu,
@@ -28,6 +26,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar'
+import { getActiveAgent, getLinkedAgents, switchAgent, clearAuth, type AgentSession } from '@/lib/auth'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 export function NavUser({
   user,
@@ -39,6 +40,34 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
+  const [activeAgent, setActiveAgent] = useState<AgentSession | null>(null)
+  const [agents, setAgents] = useState<AgentSession[]>([])
+
+  useEffect(() => {
+    setActiveAgent(getActiveAgent())
+    setAgents(getLinkedAgents())
+  }, [])
+
+  const displayName = activeAgent?.name || user.name
+  const displayDid = activeAgent?.did ? activeAgent.did.slice(0, 24) + '...' : user.email
+  const initials = displayName.slice(0, 2).toUpperCase()
+
+  function handleSwitch(did: string) {
+    switchAgent(did)
+    setActiveAgent(getLinkedAgents().find(a => a.did === did) || null)
+    router.push('/dashboard')
+    router.refresh()
+  }
+
+  function handleLogout() {
+    clearAuth()
+    router.push('/login')
+  }
+
+  function handleLinkNew() {
+    router.push('/login')
+  }
 
   return (
     <SidebarMenu>
@@ -49,14 +78,13 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg grayscale">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+              <Avatar className="h-8 w-8 rounded-lg">
+                <AvatarFallback className="rounded-lg text-xs">{initials}</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{displayName}</span>
                 <span className="text-muted-foreground truncate text-xs">
-                  {user.email}
+                  {displayDid}
                 </span>
               </div>
               <IconDotsVertical className="ml-auto size-4" />
@@ -68,38 +96,37 @@ export function NavUser({
             align="end"
             sideOffset={4}
           >
-            <DropdownMenuLabel className="p-0 font-normal">
-              <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
-                <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="text-muted-foreground truncate text-xs">
-                    {user.email}
-                  </span>
-                </div>
-              </div>
-            </DropdownMenuLabel>
+            {agents.length > 0 && (
+              <>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  Switch Agent
+                </DropdownMenuLabel>
+                <DropdownMenuGroup>
+                  {agents.map((agent) => (
+                    <DropdownMenuItem
+                      key={agent.did}
+                      onClick={() => handleSwitch(agent.did)}
+                      className="flex items-center gap-2"
+                    >
+                      {agent.did === activeAgent?.did && <IconCheck className="size-4 text-green-500" />}
+                      {agent.did !== activeAgent?.did && <span className="size-4" />}
+                      <div className="flex flex-col">
+                        <span className="text-sm">{agent.name}</span>
+                        <span className="text-xs text-muted-foreground font-mono">{agent.did.slice(0, 20)}...</span>
+                      </div>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+                <DropdownMenuSeparator />
+              </>
+            )}
+            <DropdownMenuItem onClick={handleLinkNew}>
+              <IconPlus className="size-4" />
+              Link Another Agent
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <IconUserCircle />
-                Account
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconCreditCard />
-                Billing
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <IconNotification />
-                Notifications
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconLogout />
+            <DropdownMenuItem onClick={handleLogout}>
+              <IconLogout className="size-4" />
               Log out
             </DropdownMenuItem>
           </DropdownMenuContent>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { linkAgent, getLinkedAgents } from "@/lib/auth";
 
 const API = "https://api.atelai.org";
 
@@ -33,11 +34,10 @@ export default function LoginPage() {
         .then((r) => r.json())
         .then((data) => {
           if (data.status === "verified") {
-            localStorage.setItem("atel_token", data.token);
-            localStorage.setItem("atel_did", data.did);
+            linkAgent(data.did, data.token, data.name || "Agent");
             setStatus("verified");
             clearInterval(interval);
-            router.push(`/dashboard?did=${encodeURIComponent(data.did)}`);
+            router.push(`/dashboard`);
           } else if (data.status === "expired") {
             setStatus("expired");
             clearInterval(interval);
