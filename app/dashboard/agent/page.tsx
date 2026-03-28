@@ -159,8 +159,8 @@ function AgentContent() {
               <div>
                 <span className="text-muted-foreground">Capabilities: </span>
                 <div className="flex flex-wrap gap-1 mt-1">
-                  {capabilities.map((cap: string) => (
-                    <Badge key={cap} variant="secondary">{cap}</Badge>
+                  {capabilities.map((cap: any, i: number) => (
+                    <Badge key={i} variant="secondary">{typeof cap === 'string' ? cap : cap?.type || 'unknown'}</Badge>
                   ))}
                 </div>
               </div>
