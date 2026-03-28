@@ -80,14 +80,15 @@ export function unlinkAgent(did: string) {
   }
 }
 
-// Get DID from auth (localStorage) or URL ?did= parameter
+// Get DID from URL ?did= parameter (explicit) or auth (localStorage fallback)
+// URL parameter takes priority so logged-in users can still view other agents' public profiles
 export function getDID(searchParams?: URLSearchParams): string | null {
-  const auth = getStoredAuth();
-  if (auth) return auth.did;
   if (searchParams) {
     const urlDid = searchParams.get("did");
     if (urlDid) return urlDid;
   }
+  const auth = getStoredAuth();
+  if (auth) return auth.did;
   return null;
 }
 

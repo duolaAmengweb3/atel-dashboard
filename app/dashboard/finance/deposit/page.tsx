@@ -54,7 +54,24 @@ function DepositContent() {
         const res = await fetch(`${API_BASE}/account/v1/deposit-info?did=${encodeURIComponent(did)}`)
         if (!res.ok) throw new Error(`API error: ${res.status}`)
         const data = await res.json()
-        const list = Array.isArray(data) ? data : (data.chains ?? data.depositInfo ?? [])
+        let list: ChainInfo[] = []
+        if (Array.isArray(data)) {
+          list = data
+        } else if (Array.isArray(data.chains)) {
+          list = data.chains
+        } else if (Array.isArray(data.depositInfo)) {
+          list = data.depositInfo
+        } else if (data.addresses || data.deposit_addresses) {
+          // Convert object format {chain: address} to array format
+          const addrs = data.addresses ?? data.deposit_addresses ?? {}
+          list = Object.entries(addrs).map(([chain, address]) => ({
+            chain,
+            address: address as string,
+            token: 'USDC',
+            minAmount: 1,
+            label: `${chain.toUpperCase()} (USDC)`,
+          }))
+        }
         setChains(list)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load deposit info')

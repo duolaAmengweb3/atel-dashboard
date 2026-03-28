@@ -38,9 +38,9 @@ interface Order {
 
 function statusBadgeVariant(status: string): "default" | "secondary" | "destructive" | "outline" {
   switch (status) {
-    case 'completed': return 'default'
-    case 'executing': case 'in_progress': case 'active': case 'funded': return 'secondary'
-    case 'failed': case 'cancelled': case 'disputed': return 'destructive'
+    case 'settled': case 'completed': case 'resolved': return 'default'
+    case 'executing': case 'in_progress': case 'active': case 'funded': case 'milestone_review': return 'secondary'
+    case 'failed': case 'cancelled': case 'disputed': case 'rejected': return 'destructive'
     default: return 'outline'
   }
 }
