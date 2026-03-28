@@ -113,7 +113,7 @@ function MarketplaceContent() {
                   <CardContent className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary">{offer.capability || 'general'}</Badge>
-                      <span className="text-sm font-medium">${Number(offer.price).toFixed(2)}</span>
+                      <span className="text-sm font-medium">${(Number(offer.price) || 0).toFixed(2)}</span>
                     </div>
                     <p className="text-xs text-muted-foreground">
                       {offer.completedOrders ?? offer.orderCount ?? 0} orders completed
@@ -167,7 +167,7 @@ function MarketplaceContent() {
                       <TableCell>
                         <Badge variant="secondary">{offer.capability || 'general'}</Badge>
                       </TableCell>
-                      <TableCell>${Number(offer.price).toFixed(2)}</TableCell>
+                      <TableCell>${(Number(offer.price) || 0).toFixed(2)}</TableCell>
                       <TableCell>
                         <Badge variant={offer.status === 'active' ? 'default' : 'outline'}>
                           {offer.status || 'unknown'}

@@ -125,7 +125,7 @@ function TransactionsContent() {
                         {tx.type}
                       </Badge>
                     </TableCell>
-                    <TableCell>${Number(tx.amount).toFixed(2)}</TableCell>
+                    <TableCell>${(Number(tx.amount) || 0).toFixed(2)}</TableCell>
                     <TableCell className="capitalize">{tx.channel || tx.chain || '-'}</TableCell>
                     <TableCell>
                       <Badge variant={tx.status === 'completed' ? 'default' : 'outline'}>

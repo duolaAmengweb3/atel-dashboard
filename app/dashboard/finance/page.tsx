@@ -144,7 +144,7 @@ function FinanceContent() {
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold tabular-nums">
-                ${Number(amount).toFixed(2)}
+                ${(Number(amount) || 0).toFixed(2)}
               </div>
             </CardContent>
           </Card>

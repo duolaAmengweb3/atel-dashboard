@@ -44,8 +44,10 @@ function explorerLink(chain: string | undefined, txHash: string | undefined): st
   if (!txHash) return null
   switch (chain?.toLowerCase()) {
     case 'solana': return `https://solscan.io/tx/${txHash}`
-    case 'base': case 'base_sepolia': return `https://basescan.org/tx/${txHash}`
-    case 'bsc': case 'bsc_testnet': return `https://bscscan.com/tx/${txHash}`
+    case 'base': return `https://basescan.org/tx/${txHash}`
+    case 'base_sepolia': return `https://sepolia.basescan.org/tx/${txHash}`
+    case 'bsc': return `https://bscscan.com/tx/${txHash}`
+    case 'bsc_testnet': return `https://testnet.bscscan.com/tx/${txHash}`
     default: return `https://basescan.org/tx/${txHash}`
   }
 }
