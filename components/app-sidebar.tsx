@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import { getActiveAgent } from "@/lib/auth"
+import { Button } from "@/components/ui/button"
 import {
   IconArrowDown,
   IconArrowUp,
@@ -34,6 +36,27 @@ import {
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
 import { useI18n } from '@/lib/i18n/context'
+
+function AuthAwareSidebarFooter({ user }: { user: { name: string; email: string; avatar: string } }) {
+  const [mounted, setMounted] = React.useState(false)
+  const { t } = useI18n()
+  React.useEffect(() => setMounted(true), [])
+
+  if (!mounted) return null
+
+  const agent = getActiveAgent()
+  if (agent) {
+    return <NavUser user={{ name: agent.name, email: agent.did.slice(0, 24) + '...', avatar: '' }} />
+  }
+
+  return (
+    <div className="p-2">
+      <Button asChild variant="outline" className="w-full" size="sm">
+        <a href="/login">{t("loginPrompt.connectBtn")}</a>
+      </Button>
+    </div>
+  )
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { t } = useI18n()
@@ -94,7 +117,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <AuthAwareSidebarFooter user={data.user} />
       </SidebarFooter>
     </Sidebar>
   )
