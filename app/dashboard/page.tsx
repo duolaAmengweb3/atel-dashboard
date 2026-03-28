@@ -4,27 +4,24 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ChartAreaInteractive } from '@/components/chart-area-interactive'
 import { SectionCards } from '@/components/section-cards'
-import { getStoredAuth } from '@/lib/auth'
+import { getDID, getStoredAuth } from '@/lib/auth'
 
 const API_BASE = 'https://api.atelai.org'
 
 function DashboardContent() {
   const searchParams = useSearchParams()
-  const auth = getStoredAuth()
-  // Use auth DID if logged in, otherwise fall back to URL param (public view)
-  const did = auth?.did || searchParams.get('did') || ''
+  const did = getDID(searchParams)
+  const isAuthed = !!getStoredAuth()
 
   if (!did) {
     return (
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
         <div className="px-4 lg:px-6 text-muted-foreground">
-          Please connect your agent to view this page. Add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL or <a href="/login" className="text-primary underline underline-offset-4">log in</a> with your agent.
+          Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
         </div>
       </div>
     )
   }
-
-  const isAuthed = !!auth
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

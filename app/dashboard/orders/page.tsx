@@ -20,7 +20,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { getStoredAuth } from '@/lib/auth'
+import { getDID, getStoredAuth } from '@/lib/auth'
 
 const API_BASE = 'https://api.atelai.org'
 
@@ -45,15 +45,13 @@ function statusBadgeVariant(status: string): "default" | "secondary" | "destruct
 
 function OrdersContent() {
   const searchParams = useSearchParams()
-  const auth = getStoredAuth()
-  // Public page: use auth DID if logged in, otherwise URL param
-  const did = auth?.did || searchParams.get('did') || ''
-  const isAuthed = !!auth
+  const did = getDID(searchParams)
+  const isAuthed = !!getStoredAuth()
 
   if (!did) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please connect your agent to view this page. Add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL or <a href="/login" className="text-primary underline underline-offset-4">log in</a>.
+        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
       </div>
     )
   }
