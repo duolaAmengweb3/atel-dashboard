@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/table'
 import { getStoredAuth } from '@/lib/auth'
 
-const API_BASE = 'https://api.atelai.org'
+import { API_BASE } from '@/lib/config'
 
 interface Transaction {
   id?: string

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -22,7 +23,7 @@ import {
 } from '@/components/ui/select'
 import { getDID, getStoredAuth } from '@/lib/auth'
 
-const API_BASE = 'https://api.atelai.org'
+import { API_BASE } from '@/lib/config'
 
 interface Order {
   orderId: string
@@ -41,6 +42,23 @@ function statusBadgeVariant(status: string): "default" | "secondary" | "destruct
     case 'failed': case 'cancelled': case 'disputed': return 'destructive'
     default: return 'outline'
   }
+}
+
+function CopyButton({ command, label, variant = "outline" }: { command: string; label: string; variant?: "outline" | "default" | "destructive" }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <Button
+      variant={variant}
+      size="sm"
+      onClick={() => {
+        navigator.clipboard.writeText(command)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      }}
+    >
+      {copied ? "Copied!" : label}
+    </Button>
+  )
 }
 
 function OrdersContent() {
@@ -91,7 +109,10 @@ function OrdersContent() {
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Orders</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-2xl font-semibold">Orders</h1>
+        <CopyButton command='atel order <executor-did> general 0.005 --desc "your task"' label="Copy Order Command" />
+      </div>
 
       <div className="flex flex-wrap items-center gap-4">
         <Tabs value={roleFilter} onValueChange={setRoleFilter}>
@@ -128,12 +149,13 @@ function OrdersContent() {
               <TableHead>Status</TableHead>
               <TableHead>Chain</TableHead>
               <TableHead>Date</TableHead>
+              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center text-muted-foreground">
+                <TableCell colSpan={7} className="text-center text-muted-foreground">
                   No orders found
                 </TableCell>
               </TableRow>
@@ -158,6 +180,19 @@ function OrdersContent() {
                   <TableCell className="capitalize">{order.chain}</TableCell>
                   <TableCell className="text-muted-foreground text-xs">
                     {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '-'}
+                  </TableCell>
+                  <TableCell>
+                    {order.status === 'created' && (
+                      <CopyButton command={`atel accept ${order.orderId}`} label="Accept" variant="default" />
+                    )}
+                    {(order.status === 'executing' || order.status === 'disputed') && (
+                      <Link href={`/dashboard/orders/${order.orderId}`}>
+                        <Button variant="outline" size="sm">View</Button>
+                      </Link>
+                    )}
+                    {order.status === 'settled' && (
+                      <CopyButton command={`atel rate ${order.orderId} 5 "great work"`} label="Rate" variant="default" />
+                    )}
                   </TableCell>
                 </TableRow>
               ))

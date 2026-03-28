@@ -1,4 +1,6 @@
-const API = "https://api.atelai.org";
+import { API_BASE } from '@/lib/config';
+
+const API = API_BASE;
 
 export interface AgentSession {
   did: string;

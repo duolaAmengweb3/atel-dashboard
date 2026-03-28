@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/tooltip'
 import { getStoredAuth } from '@/lib/auth'
 
-const API_BASE = 'https://api.atelai.org'
+import { API_BASE } from '@/lib/config'
 
 function WithdrawContent() {
   const auth = getStoredAuth()

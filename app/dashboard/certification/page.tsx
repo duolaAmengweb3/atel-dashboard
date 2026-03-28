@@ -14,7 +14,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { getDID } from '@/lib/auth'
 
-const API_BASE = 'https://api.atelai.org'
+import { API_BASE } from '@/lib/config'
 
 interface CertStatus {
   level: string

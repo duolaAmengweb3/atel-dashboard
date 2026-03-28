@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { linkAgent, getLinkedAgents } from "@/lib/auth";
 
-const API = "https://api.atelai.org";
+import { API_BASE } from '@/lib/config';
+
+const API = API_BASE;
 
 export default function LoginPage() {
   const router = useRouter();

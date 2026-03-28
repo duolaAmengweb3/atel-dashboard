@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import {
   Card,
   CardContent,
@@ -19,7 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 
-const API_BASE = 'https://api.atelai.org'
+import { API_BASE } from '@/lib/config'
 
 interface OrderDetail {
   orderId: string
@@ -74,6 +75,23 @@ function truncateDid(did: string): string {
   if (!did) return '-'
   if (did.length <= 30) return did
   return did.slice(0, 20) + '...' + did.slice(-8)
+}
+
+function CopyButton({ command, label, variant = "outline" }: { command: string; label: string; variant?: "outline" | "default" | "destructive" }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <Button
+      variant={variant}
+      size="sm"
+      onClick={() => {
+        navigator.clipboard.writeText(command)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      }}
+    >
+      {copied ? "Copied!" : label}
+    </Button>
+  )
 }
 
 export default function OrderDetailPage() {
@@ -177,6 +195,45 @@ export default function OrderDetailPage() {
         </CardContent>
       </Card>
 
+      {/* Order Actions */}
+      {order.status === 'created' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Order Actions</CardTitle>
+            <CardDescription>This order is waiting to be accepted. Copy a CLI command to act.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <CopyButton command={`atel accept ${order.orderId}`} label="Accept Order" variant="default" />
+            <CopyButton command={`atel reject ${order.orderId}`} label="Reject Order" variant="destructive" />
+          </CardContent>
+        </Card>
+      )}
+
+      {order.status === 'executing' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Order Actions</CardTitle>
+            <CardDescription>This order is in progress. Copy a CLI command to act.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <CopyButton command={`atel order-cancel ${order.orderId} "reason"`} label="Cancel Order" variant="destructive" />
+            <CopyButton command={`atel dispute ${order.orderId} quality "reason"`} label="Open Dispute" variant="destructive" />
+          </CardContent>
+        </Card>
+      )}
+
+      {order.status === 'settled' && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Order Actions</CardTitle>
+            <CardDescription>This order is settled. Leave a rating.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-2">
+            <CopyButton command={`atel rate ${order.orderId} 5 "great work"`} label="Rate" variant="default" />
+          </CardContent>
+        </Card>
+      )}
+
       {/* Milestone Progress */}
       <Card>
         <CardHeader>
@@ -202,6 +259,12 @@ export default function OrderDetailPage() {
                     <span className="text-sm font-medium">{ms.name || `Step ${ms.step ?? i + 1}`}</span>
                   </div>
                   <Badge variant={statusBadgeVariant(ms.status)}>{ms.status}</Badge>
+                  {ms.status === 'submitted' && (
+                    <div className="flex gap-1">
+                      <CopyButton command={`atel milestone-verify ${orderId} ${ms.step ?? i} --pass`} label="Approve" variant="default" />
+                      <CopyButton command={`atel milestone-verify ${orderId} ${ms.step ?? i} --reject "reason"`} label="Reject" variant="destructive" />
+                    </div>
+                  )}
                 </div>
               ))}
             </div>

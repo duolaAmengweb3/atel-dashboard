@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/table'
 import { getDID } from '@/lib/auth'
 
-const API_BASE = 'https://api.atelai.org'
+import { API_BASE } from '@/lib/config'
 
 interface Dispute {
   disputeId: string
