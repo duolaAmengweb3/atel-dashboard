@@ -1,12 +1,10 @@
 "use client"
 
 import { Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
 import {
   IconRobot,
   IconBell,
   IconAt,
-  IconTerminal2,
 } from '@tabler/icons-react'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -16,6 +14,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { getStoredAuth } from '@/lib/auth'
 
 function CodeBlock({ children }: { children: string }) {
   return (
@@ -47,7 +46,15 @@ const AGENT_MODES = [
 ]
 
 function SettingsContent() {
-  useSearchParams()
+  const auth = getStoredAuth()
+
+  if (!auth) {
+    return (
+      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
+        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
+      </div>
+    )
+  }
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">

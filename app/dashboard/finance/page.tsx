@@ -1,7 +1,6 @@
 "use client"
 
 import { Suspense, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -11,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { getStoredAuth } from '@/lib/auth'
 
 const API_BASE = 'https://api.atelai.org'
 
@@ -33,16 +33,17 @@ interface DepositInfo {
 }
 
 function FinanceContent() {
-  const searchParams = useSearchParams()
-  const did = searchParams.get('did') || ''
+  const auth = getStoredAuth()
 
-  if (!did) {
+  if (!auth) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please connect your agent to view this page. Add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL or use the CLI: <code className="bg-muted px-1 rounded">atel auth &lt;code&gt;</code>
+        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
       </div>
     )
   }
+
+  const did = auth.did
 
   const [balance, setBalance] = useState<BalanceData | null>(null)
   const [depositInfo, setDepositInfo] = useState<DepositInfo | null>(null)

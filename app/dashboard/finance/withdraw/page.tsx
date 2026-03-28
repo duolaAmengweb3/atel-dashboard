@@ -1,7 +1,6 @@
 "use client"
 
 import { Suspense, useEffect, useState } from 'react'
-import { useSearchParams } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
@@ -18,20 +17,22 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { getStoredAuth } from '@/lib/auth'
 
 const API_BASE = 'https://api.atelai.org'
 
 function WithdrawContent() {
-  const searchParams = useSearchParams()
-  const did = searchParams.get('did') || ''
+  const auth = getStoredAuth()
 
-  if (!did) {
+  if (!auth) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please connect your agent to view this page. Add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL or use the CLI: <code className="bg-muted px-1 rounded">atel auth &lt;code&gt;</code>
+        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
       </div>
     )
   }
+
+  const did = auth.did
 
   const [balance, setBalance] = useState<string | null>(null)
   const [loadingBalance, setLoadingBalance] = useState(true)

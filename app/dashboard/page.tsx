@@ -4,22 +4,27 @@ import { Suspense, useEffect, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { ChartAreaInteractive } from '@/components/chart-area-interactive'
 import { SectionCards } from '@/components/section-cards'
+import { getStoredAuth } from '@/lib/auth'
 
 const API_BASE = 'https://api.atelai.org'
 
 function DashboardContent() {
   const searchParams = useSearchParams()
-  const did = searchParams.get('did') || ''
+  const auth = getStoredAuth()
+  // Use auth DID if logged in, otherwise fall back to URL param (public view)
+  const did = auth?.did || searchParams.get('did') || ''
 
   if (!did) {
     return (
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
         <div className="px-4 lg:px-6 text-muted-foreground">
-          Please connect your agent to view this page. Add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL or use the CLI: <code className="bg-muted px-1 rounded">atel auth &lt;code&gt;</code>
+          Please connect your agent to view this page. Add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL or <a href="/login" className="text-primary underline underline-offset-4">log in</a> with your agent.
         </div>
       </div>
     )
   }
+
+  const isAuthed = !!auth
 
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -58,15 +63,18 @@ function DashboardContent() {
           setActiveOrders(active.length)
         }
 
-        try {
-          const balRes = await fetch(`${API_BASE}/account/v1/balance?did=${encodeURIComponent(did)}`)
-          if (balRes.ok) {
-            const bal = await balRes.json()
-            const total = bal.platformBalance ?? bal.platform_balance ?? bal.balance ?? 0
-            setBalance(`$${Number(total).toFixed(2)}`)
+        // Only fetch balance if authenticated (private data)
+        if (isAuthed) {
+          try {
+            const balRes = await fetch(`${API_BASE}/account/v1/balance?did=${encodeURIComponent(did)}`)
+            if (balRes.ok) {
+              const bal = await balRes.json()
+              const total = bal.platformBalance ?? bal.platform_balance ?? bal.balance ?? 0
+              setBalance(`$${Number(total).toFixed(2)}`)
+            }
+          } catch {
+            // balance endpoint may not exist yet
           }
-        } catch {
-          // balance endpoint may not exist yet
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data')
@@ -75,7 +83,7 @@ function DashboardContent() {
       }
     }
     fetchData()
-  }, [did])
+  }, [did, isAuthed])
 
   if (loading) {
     return (
@@ -97,10 +105,17 @@ function DashboardContent() {
     <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
       <SectionCards
         trustScore={trustScore}
-        balance={balance}
+        balance={isAuthed ? balance : '--'}
         activeOrders={activeOrders}
         points={points}
       />
+      {!isAuthed && (
+        <div className="px-4 lg:px-6">
+          <p className="text-sm text-muted-foreground">
+            <a href="/login" className="text-primary underline underline-offset-4">Log in</a> to view your balance and access private data.
+          </p>
+        </div>
+      )}
       <div className="px-4 lg:px-6">
         <ChartAreaInteractive />
       </div>
