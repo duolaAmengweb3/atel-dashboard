@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { getDID } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -40,6 +41,7 @@ function CodeBlock({ children }: { children: string }) {
 function CertificationContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
+  const { t } = useI18n()
 
   const [certStatus, setCertStatus] = useState<CertStatus | null>(null)
   const [requirements, setRequirements] = useState<CertRequirements | null>(null)
@@ -52,7 +54,6 @@ function CertificationContent() {
       setLoading(true)
       setError(null)
       try {
-        // Requirements are always public; cert status + agent need a DID
         const fetches: Promise<Response>[] = [
           fetch(`${API_BASE}/cert/v1/requirements`),
         ]
@@ -96,7 +97,7 @@ function CertificationContent() {
   if (loading) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-muted-foreground">Loading certification data...</p>
+        <p className="text-muted-foreground">{t("certPage.loadingCert")}</p>
       </div>
     )
   }
@@ -104,7 +105,7 @@ function CertificationContent() {
   if (error) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-destructive">Error: {error}</p>
+        <p className="text-destructive">{t("common.error")}: {error}</p>
       </div>
     )
   }
@@ -114,63 +115,63 @@ function CertificationContent() {
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Certification</h1>
+      <h1 className="text-2xl font-semibold">{t("certPage.title")}</h1>
 
       {!did && (
         <p className="text-muted-foreground">
-          Viewing public certification requirements. To check a specific agent, append{' '}
-          <code className="bg-muted px-1 rounded">?did=did:atel:...</code> to the URL or{' '}
-          <a href="/login" className="text-primary underline underline-offset-4">log in</a>.
+          {t("certPage.viewingPublic")}{' '}
+          <code className="bg-muted px-1 rounded">?did=did:atel:...</code>{' '}
+          {t("certPage.toUrlOr")}{' '}
+          <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a>.
         </p>
       )}
 
-      {/* Current Status — only when DID is provided */}
       {did && (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <IconCertificate className="h-5 w-5" />
-            Current Status
+            {t("certPage.currentStatus")}
           </CardTitle>
-          <CardDescription>Certification status on the ATEL network</CardDescription>
+          <CardDescription>{t("certPage.certStatusDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           {hasCert ? (
             <div className="flex flex-col gap-3">
               <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">Level:</span>
+                <span className="text-sm text-muted-foreground">{t("agent.level")}:</span>
                 <Badge variant={isActive ? 'default' : 'secondary'} className="capitalize">
                   {certStatus.level}
                 </Badge>
               </div>
               <div className="flex items-center gap-3">
-                <span className="text-sm text-muted-foreground">Status:</span>
+                <span className="text-sm text-muted-foreground">{t("common.status")}:</span>
                 <Badge variant={isActive ? 'default' : 'outline'} className="capitalize">
                   {certStatus.status}
                 </Badge>
               </div>
               {certStatus.grantedBy && (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">Granted by:</span>
+                  <span className="text-sm text-muted-foreground">{t("certPage.grantedBy")}</span>
                   <span className="text-sm font-mono">{certStatus.grantedBy}</span>
                 </div>
               )}
               {certStatus.expires && (
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-muted-foreground">Expires:</span>
+                  <span className="text-sm text-muted-foreground">{t("certPage.expires")}</span>
                   <span className="text-sm">{new Date(certStatus.expires).toLocaleDateString()}</span>
                 </div>
               )}
               <div className="pt-2">
-                <p className="text-sm text-muted-foreground mb-2">Renew your certification via CLI:</p>
+                <p className="text-sm text-muted-foreground mb-2">{t("certPage.renewViaCli")}</p>
                 <CodeBlock>{`atel cert-renew ${certStatus.level}`}</CodeBlock>
               </div>
             </div>
           ) : (
             <div className="flex flex-col gap-3">
-              <p className="text-muted-foreground">Not certified. Review the requirements below to apply.</p>
+              <p className="text-muted-foreground">{t("certPage.notCertified")}</p>
               <div className="pt-2">
-                <p className="text-sm text-muted-foreground mb-2">Apply for certification via CLI:</p>
+                <p className="text-sm text-muted-foreground mb-2">{t("certPage.applyViaCli")}</p>
                 <CodeBlock>atel cert-apply certified</CodeBlock>
               </div>
             </div>
@@ -179,12 +180,11 @@ function CertificationContent() {
       </Card>
       )}
 
-      {/* Trust Score Reference — only when DID is provided */}
       {did && (
       <Card>
         <CardHeader>
-          <CardTitle>Trust Score</CardTitle>
-          <CardDescription>Current trust score for certification eligibility</CardDescription>
+          <CardTitle>{t("trustPage.trustScore")}</CardTitle>
+          <CardDescription>{t("certPage.trustScoreEligibility")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-4xl font-bold tabular-nums">{trustScore.toFixed(2)}</div>
@@ -192,33 +192,32 @@ function CertificationContent() {
       </Card>
       )}
 
-      {/* Requirements — always visible */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <IconShieldCheck className="h-5 w-5 text-green-500" />
-              Certified
+              {t("certPage.certified")}
             </CardTitle>
-            <CardDescription>Standard certification for trusted agents</CardDescription>
+            <CardDescription>{t("certPage.certifiedDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Trust Score Required</span>
+                <span className="text-sm text-muted-foreground">{t("certPage.trustScoreRequired")}</span>
                 <span className="font-semibold">
                   {requirements?.certified?.trustScore ?? 65}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Annual Fee</span>
+                <span className="text-sm text-muted-foreground">{t("certPage.annualFee")}</span>
                 <span className="font-semibold">
                   {requirements?.certified?.fee ?? '$50/yr'}
                 </span>
               </div>
               {did && (
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Your Score</span>
+                <span className="text-sm text-muted-foreground">{t("certPage.yourScore")}</span>
                 <Badge variant={trustScore >= (requirements?.certified?.trustScore ?? 65) ? 'default' : 'destructive'}>
                   {trustScore.toFixed(2)}
                 </Badge>
@@ -232,7 +231,7 @@ function CertificationContent() {
                     disabled={trustScore < (requirements?.certified?.trustScore ?? 65)}
                     onClick={() => navigator.clipboard.writeText('atel cert-apply certified')}
                   >
-                    Copy Apply Command
+                    {t("certPage.copyApplyCommand")}
                   </Button>
                 </div>
               )}
@@ -244,27 +243,27 @@ function CertificationContent() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <IconBuilding className="h-5 w-5 text-blue-500" />
-              Enterprise
+              {t("certPage.enterprise")}
             </CardTitle>
-            <CardDescription>Premium certification for high-trust agents</CardDescription>
+            <CardDescription>{t("certPage.enterpriseDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col gap-3">
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Trust Score Required</span>
+                <span className="text-sm text-muted-foreground">{t("certPage.trustScoreRequired")}</span>
                 <span className="font-semibold">
                   {requirements?.enterprise?.trustScore ?? 80}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Annual Fee</span>
+                <span className="text-sm text-muted-foreground">{t("certPage.annualFee")}</span>
                 <span className="font-semibold">
                   {requirements?.enterprise?.fee ?? '$500/yr'}
                 </span>
               </div>
               {did && (
               <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Your Score</span>
+                <span className="text-sm text-muted-foreground">{t("certPage.yourScore")}</span>
                 <Badge variant={trustScore >= (requirements?.enterprise?.trustScore ?? 80) ? 'default' : 'destructive'}>
                   {trustScore.toFixed(2)}
                 </Badge>
@@ -278,7 +277,7 @@ function CertificationContent() {
                     disabled={trustScore < (requirements?.enterprise?.trustScore ?? 80)}
                     onClick={() => navigator.clipboard.writeText('atel cert-apply enterprise')}
                   >
-                    Copy Apply Command
+                    {t("certPage.copyApplyCommand")}
                   </Button>
                 </div>
               )}
@@ -291,8 +290,9 @@ function CertificationContent() {
 }
 
 export default function CertificationPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <CertificationContent />
     </Suspense>
   )

@@ -11,6 +11,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { getStoredAuth } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -34,11 +35,12 @@ interface DepositInfo {
 
 function FinanceContent() {
   const auth = getStoredAuth()
+  const { t } = useI18n()
 
   if (!auth) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
+        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginToView")}
       </div>
     )
   }
@@ -71,7 +73,6 @@ function FinanceContent() {
 
         if (depRes.status === 'fulfilled' && depRes.value.ok) {
           const data = await depRes.value.json()
-          // API returns { chains: [...] } with chain/address pairs
           let addresses: Record<string, string> = {}
           if (Array.isArray(data.chains)) {
             for (const c of data.chains as ChainDepositInfo[]) {
@@ -104,7 +105,7 @@ function FinanceContent() {
   if (loading) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-muted-foreground">Loading finance data...</p>
+        <p className="text-muted-foreground">{t("finance.loadingFinance")}</p>
       </div>
     )
   }
@@ -112,7 +113,7 @@ function FinanceContent() {
   if (error) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-destructive">Error: {error}</p>
+        <p className="text-destructive">{t("common.error")}: {error}</p>
       </div>
     )
   }
@@ -121,12 +122,12 @@ function FinanceContent() {
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Finance</h1>
+      <h1 className="text-2xl font-semibold">{t("finance.title")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
           <CardHeader>
-            <CardTitle>Platform Balance</CardTitle>
+            <CardTitle>{t("finance.platformBalance")}</CardTitle>
             <CardDescription>USDC</CardDescription>
           </CardHeader>
           <CardContent>
@@ -140,7 +141,7 @@ function FinanceContent() {
           <Card key={chain}>
             <CardHeader>
               <CardTitle className="capitalize">{chain}</CardTitle>
-              <CardDescription>On-chain USDC</CardDescription>
+              <CardDescription>{t("finance.onChainUsdc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-4xl font-bold tabular-nums">
@@ -153,10 +154,10 @@ function FinanceContent() {
         {Object.keys(chainBalances).length === 0 && !balance && (
           <Card>
             <CardHeader>
-              <CardTitle>No balance data</CardTitle>
+              <CardTitle>{t("finance.noBalanceData")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground text-sm">Balance data unavailable</p>
+              <p className="text-muted-foreground text-sm">{t("finance.balanceUnavailable")}</p>
             </CardContent>
           </Card>
         )}
@@ -165,8 +166,8 @@ function FinanceContent() {
       {depositInfo && Object.keys(depositInfo.addresses).length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Deposit Addresses</CardTitle>
-            <CardDescription>Send USDC to these addresses</CardDescription>
+            <CardTitle>{t("finance.depositAddresses")}</CardTitle>
+            <CardDescription>{t("finance.sendUsdcTo")}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             {Object.entries(depositInfo.addresses).map(([chain, address]) => (
@@ -177,7 +178,7 @@ function FinanceContent() {
                   onClick={() => copyToClipboard(address as string, chain)}
                   className="text-xs px-2 py-1 rounded border border-input bg-background hover:bg-accent transition-colors"
                 >
-                  {copiedAddr === chain ? 'Copied!' : 'Copy'}
+                  {copiedAddr === chain ? t("common.copied") : t("common.copy")}
                 </button>
               </div>
             ))}
@@ -190,19 +191,19 @@ function FinanceContent() {
           href="/dashboard/finance/history"
           className="text-sm text-primary underline-offset-4 hover:underline"
         >
-          View Transaction History
+          {t("finance.viewHistory")}
         </Link>
         <Link
           href="/dashboard/finance/deposit"
           className="text-sm text-primary underline-offset-4 hover:underline"
         >
-          Deposit
+          {t("sidebar.deposit")}
         </Link>
         <Link
           href="/dashboard/finance/withdraw"
           className="text-sm text-primary underline-offset-4 hover:underline"
         >
-          Withdraw
+          {t("sidebar.withdraw")}
         </Link>
       </div>
     </div>
@@ -210,8 +211,9 @@ function FinanceContent() {
 }
 
 export default function FinancePage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <FinanceContent />
     </Suspense>
   )

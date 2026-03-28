@@ -19,6 +19,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -79,6 +80,7 @@ function truncateDid(did: string): string {
 
 function CopyButton({ command, label, variant = "outline" }: { command: string; label: string; variant?: "outline" | "default" | "destructive" }) {
   const [copied, setCopied] = useState(false)
+  const { t } = useI18n()
   return (
     <Button
       variant={variant}
@@ -89,7 +91,7 @@ function CopyButton({ command, label, variant = "outline" }: { command: string; 
         setTimeout(() => setCopied(false), 2000)
       }}
     >
-      {copied ? "Copied!" : label}
+      {copied ? t("common.copied") : label}
     </Button>
   )
 }
@@ -97,6 +99,7 @@ function CopyButton({ command, label, variant = "outline" }: { command: string; 
 export default function OrderDetailPage() {
   const params = useParams()
   const orderId = params.id as string
+  const { t } = useI18n()
 
   const [order, setOrder] = useState<OrderDetail | null>(null)
   const [milestones, setMilestones] = useState<Milestone[]>([])
@@ -118,7 +121,7 @@ export default function OrderDetailPage() {
         if (orderRes.status === 'fulfilled' && orderRes.value.ok) {
           setOrder(await orderRes.value.json())
         } else {
-          throw new Error('Failed to load order details')
+          throw new Error(t("orderDetail.failedLoad"))
         }
 
         if (msRes.status === 'fulfilled' && msRes.value.ok) {
@@ -142,7 +145,7 @@ export default function OrderDetailPage() {
   if (loading) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-muted-foreground">Loading order details...</p>
+        <p className="text-muted-foreground">{t("orderDetail.loadingDetails")}</p>
       </div>
     )
   }
@@ -150,45 +153,45 @@ export default function OrderDetailPage() {
   if (error || !order) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-destructive">Error: {error ?? 'Order not found'}</p>
+        <p className="text-destructive">{t("common.error")}: {error ?? t("orderDetail.orderNotFound")}</p>
       </div>
     )
   }
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Order Details</h1>
+      <h1 className="text-2xl font-semibold">{t("orderDetail.title")}</h1>
 
       {/* Order Info Card */}
       <Card>
         <CardHeader>
-          <CardTitle>Order Info</CardTitle>
+          <CardTitle>{t("orderDetail.orderInfo")}</CardTitle>
           <CardDescription className="font-mono text-xs">{order.orderId}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-muted-foreground">Status: </span>
+              <span className="text-muted-foreground">{t("common.status")}: </span>
               <Badge variant={statusBadgeVariant(order.status)}>{order.status}</Badge>
             </div>
             <div>
-              <span className="text-muted-foreground">Amount: </span>
+              <span className="text-muted-foreground">{t("common.amount")}: </span>
               <span className="font-semibold">${(parseFloat(String(order.amount)) || 0).toFixed(2)}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Chain: </span>
+              <span className="text-muted-foreground">{t("common.chain")}: </span>
               <span className="capitalize">{order.chain}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Created: </span>
+              <span className="text-muted-foreground">{t("orderDetail.created")}: </span>
               <span>{order.createdAt ? new Date(order.createdAt).toLocaleString() : '-'}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Requester: </span>
+              <span className="text-muted-foreground">{t("orderDetail.requester")}: </span>
               <span className="font-mono text-xs" title={order.requesterDid}>{truncateDid(order.requesterDid)}</span>
             </div>
             <div>
-              <span className="text-muted-foreground">Executor: </span>
+              <span className="text-muted-foreground">{t("orderDetail.executorLabel")}: </span>
               <span className="font-mono text-xs" title={order.executorDid}>{truncateDid(order.executorDid)}</span>
             </div>
           </div>
@@ -199,12 +202,12 @@ export default function OrderDetailPage() {
       {order.status === 'created' && (
         <Card>
           <CardHeader>
-            <CardTitle>Order Actions</CardTitle>
-            <CardDescription>This order is waiting to be accepted. Copy a CLI command to act.</CardDescription>
+            <CardTitle>{t("orderDetail.orderActions")}</CardTitle>
+            <CardDescription>{t("orderDetail.waitingAccept")}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            <CopyButton command={`atel accept ${order.orderId}`} label="Accept Order" variant="default" />
-            <CopyButton command={`atel reject ${order.orderId}`} label="Reject Order" variant="destructive" />
+            <CopyButton command={`atel accept ${order.orderId}`} label={t("orders.acceptOrder")} variant="default" />
+            <CopyButton command={`atel reject ${order.orderId}`} label={t("orders.rejectOrder")} variant="destructive" />
           </CardContent>
         </Card>
       )}
@@ -212,12 +215,12 @@ export default function OrderDetailPage() {
       {order.status === 'executing' && (
         <Card>
           <CardHeader>
-            <CardTitle>Order Actions</CardTitle>
-            <CardDescription>This order is in progress. Copy a CLI command to act.</CardDescription>
+            <CardTitle>{t("orderDetail.orderActions")}</CardTitle>
+            <CardDescription>{t("orderDetail.inProgressDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            <CopyButton command={`atel order-cancel ${order.orderId} "reason"`} label="Cancel Order" variant="destructive" />
-            <CopyButton command={`atel dispute ${order.orderId} quality "reason"`} label="Open Dispute" variant="destructive" />
+            <CopyButton command={`atel order-cancel ${order.orderId} "reason"`} label={t("orders.cancelOrder")} variant="destructive" />
+            <CopyButton command={`atel dispute ${order.orderId} quality "reason"`} label={t("orders.openDispute")} variant="destructive" />
           </CardContent>
         </Card>
       )}
@@ -225,11 +228,11 @@ export default function OrderDetailPage() {
       {order.status === 'settled' && (
         <Card>
           <CardHeader>
-            <CardTitle>Order Actions</CardTitle>
-            <CardDescription>This order is settled. Leave a rating.</CardDescription>
+            <CardTitle>{t("orderDetail.orderActions")}</CardTitle>
+            <CardDescription>{t("orderDetail.settledDesc")}</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            <CopyButton command={`atel rate ${order.orderId} 5 "great work"`} label="Rate" variant="default" />
+            <CopyButton command={`atel rate ${order.orderId} 5 "great work"`} label={t("common.rate")} variant="default" />
           </CardContent>
         </Card>
       )}
@@ -237,11 +240,11 @@ export default function OrderDetailPage() {
       {/* Milestone Progress */}
       <Card>
         <CardHeader>
-          <CardTitle>Milestone Progress</CardTitle>
+          <CardTitle>{t("orderDetail.milestoneProgress")}</CardTitle>
         </CardHeader>
         <CardContent>
           {milestones.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No milestones found</p>
+            <p className="text-muted-foreground text-sm">{t("orderDetail.noMilestones")}</p>
           ) : (
             <div className="flex flex-col gap-3">
               {milestones.map((ms, i) => (
@@ -261,8 +264,8 @@ export default function OrderDetailPage() {
                   <Badge variant={statusBadgeVariant(ms.status)}>{ms.status}</Badge>
                   {ms.status === 'submitted' && (
                     <div className="flex gap-1">
-                      <CopyButton command={`atel milestone-verify ${orderId} ${ms.step ?? i} --pass`} label="Approve" variant="default" />
-                      <CopyButton command={`atel milestone-verify ${orderId} ${ms.step ?? i} --reject "reason"`} label="Reject" variant="destructive" />
+                      <CopyButton command={`atel milestone-verify ${orderId} ${ms.step ?? i} --pass`} label={t("orderDetail.approve")} variant="default" />
+                      <CopyButton command={`atel milestone-verify ${orderId} ${ms.step ?? i} --reject "reason"`} label={t("common.reject")} variant="destructive" />
                     </div>
                   )}
                 </div>
@@ -275,19 +278,19 @@ export default function OrderDetailPage() {
       {/* Chain Records */}
       <Card>
         <CardHeader>
-          <CardTitle>Chain Records</CardTitle>
+          <CardTitle>{t("orderDetail.chainRecords")}</CardTitle>
         </CardHeader>
         <CardContent>
           {chainRecords.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No chain records found</p>
+            <p className="text-muted-foreground text-sm">{t("orderDetail.noChainRecords")}</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Operation</TableHead>
-                  <TableHead>Chain</TableHead>
-                  <TableHead>Tx Hash</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t("orderDetail.operation")}</TableHead>
+                  <TableHead>{t("common.chain")}</TableHead>
+                  <TableHead>{t("orderDetail.txHash")}</TableHead>
+                  <TableHead>{t("common.status")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>

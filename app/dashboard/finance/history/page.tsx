@@ -11,6 +11,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getStoredAuth } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -50,11 +51,12 @@ function getExplorerUrl(chain?: string, txHash?: string): string | null {
 
 function TransactionsContent() {
   const auth = getStoredAuth()
+  const { t } = useI18n()
 
   if (!auth) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
+        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginToView")}
       </div>
     )
   }
@@ -86,28 +88,28 @@ function TransactionsContent() {
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
-      <h1 className="text-2xl font-semibold">Transactions</h1>
+      <h1 className="text-2xl font-semibold">{t("transactionsPage.title")}</h1>
 
-      {loading && <p className="text-muted-foreground">Loading transactions...</p>}
-      {error && <p className="text-destructive">Error: {error}</p>}
+      {loading && <p className="text-muted-foreground">{t("transactionsPage.loadingTx")}</p>}
+      {error && <p className="text-destructive">{t("common.error")}: {error}</p>}
 
       {!loading && !error && (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Channel</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>TX Hash</TableHead>
+              <TableHead>{t("common.date")}</TableHead>
+              <TableHead>{t("common.type")}</TableHead>
+              <TableHead>{t("common.amount")}</TableHead>
+              <TableHead>{t("transactionsPage.channel")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead>{t("transactionsPage.txHash")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {transactions.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="text-center text-muted-foreground">
-                  No transactions found.
+                  {t("transactionsPage.noTransactions")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -162,8 +164,9 @@ function TransactionsContent() {
 }
 
 export default function TransactionsPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <TransactionsContent />
     </Suspense>
   )

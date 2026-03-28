@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { getDID, getStoredAuth } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -46,6 +47,7 @@ function statusBadgeVariant(status: string): "default" | "secondary" | "destruct
 
 function CopyButton({ command, label, variant = "outline" }: { command: string; label: string; variant?: "outline" | "default" | "destructive" }) {
   const [copied, setCopied] = useState(false)
+  const { t } = useI18n()
   return (
     <Button
       variant={variant}
@@ -56,7 +58,7 @@ function CopyButton({ command, label, variant = "outline" }: { command: string; 
         setTimeout(() => setCopied(false), 2000)
       }}
     >
-      {copied ? "Copied!" : label}
+      {copied ? t("common.copied") : label}
     </Button>
   )
 }
@@ -65,11 +67,12 @@ function OrdersContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
   const isAuthed = !!getStoredAuth()
+  const { t } = useI18n()
 
   if (!did) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
+        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginOrDid")} <code className="bg-muted px-1 rounded">?did=your-did</code> {t("common.toTheUrl")}
       </div>
     )
   }
@@ -110,25 +113,25 @@ function OrdersContent() {
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Orders</h1>
-        <CopyButton command='atel order <executor-did> general 0.005 --desc "your task"' label="Copy Order Command" />
+        <h1 className="text-2xl font-semibold">{t("orders.title")}</h1>
+        <CopyButton command='atel order <executor-did> general 0.005 --desc "your task"' label={t("orders.copyOrderCommand")} />
       </div>
 
       <div className="flex flex-wrap items-center gap-4">
         <Tabs value={roleFilter} onValueChange={setRoleFilter}>
           <TabsList>
-            <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="requester">Requester</TabsTrigger>
-            <TabsTrigger value="executor">Executor</TabsTrigger>
+            <TabsTrigger value="all">{t("orders.all")}</TabsTrigger>
+            <TabsTrigger value="requester">{t("orders.requester")}</TabsTrigger>
+            <TabsTrigger value="executor">{t("orders.executor")}</TabsTrigger>
           </TabsList>
         </Tabs>
 
         <Select value={statusFilter} onValueChange={setStatusFilter}>
           <SelectTrigger className="w-[160px]">
-            <SelectValue placeholder="Status" />
+            <SelectValue placeholder={t("common.status")} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="all">{t("orders.allStatuses")}</SelectItem>
             {allStatuses.map((s) => (
               <SelectItem key={s} value={s}>{s}</SelectItem>
             ))}
@@ -136,27 +139,27 @@ function OrdersContent() {
         </Select>
       </div>
 
-      {loading && <p className="text-muted-foreground">Loading orders...</p>}
-      {error && <p className="text-destructive">Error: {error}</p>}
+      {loading && <p className="text-muted-foreground">{t("orders.loadingOrders")}</p>}
+      {error && <p className="text-destructive">{t("common.error")}: {error}</p>}
 
       {!loading && !error && (
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Amount</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Chain</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Actions</TableHead>
+              <TableHead>{t("orders.orderId")}</TableHead>
+              <TableHead>{t("orders.role")}</TableHead>
+              <TableHead>{t("common.amount")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead>{t("common.chain")}</TableHead>
+              <TableHead>{t("common.date")}</TableHead>
+              <TableHead>{t("common.actions")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="text-center text-muted-foreground">
-                  No orders found
+                  {t("orders.noOrdersFound")}
                 </TableCell>
               </TableRow>
             ) : (
@@ -183,15 +186,15 @@ function OrdersContent() {
                   </TableCell>
                   <TableCell>
                     {order.status === 'created' && (
-                      <CopyButton command={`atel accept ${order.orderId}`} label="Accept" variant="default" />
+                      <CopyButton command={`atel accept ${order.orderId}`} label={t("common.accept")} variant="default" />
                     )}
                     {(order.status === 'executing' || order.status === 'disputed') && (
                       <Link href={`/dashboard/orders/${order.orderId}`}>
-                        <Button variant="outline" size="sm">View</Button>
+                        <Button variant="outline" size="sm">{t("common.view")}</Button>
                       </Link>
                     )}
                     {order.status === 'settled' && (
-                      <CopyButton command={`atel rate ${order.orderId} 5 "great work"`} label="Rate" variant="default" />
+                      <CopyButton command={`atel rate ${order.orderId} 5 "great work"`} label={t("common.rate")} variant="default" />
                     )}
                   </TableCell>
                 </TableRow>
@@ -205,8 +208,9 @@ function OrdersContent() {
 }
 
 export default function OrdersPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <OrdersContent />
     </Suspense>
   )

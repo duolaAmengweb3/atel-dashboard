@@ -14,6 +14,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getDID } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -41,11 +42,12 @@ function statusBadgeClass(status: string): string {
 function DisputesContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
+  const { t } = useI18n()
 
   if (!did) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
+        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginOrDid")} <code className="bg-muted px-1 rounded">?did=your-did</code> {t("common.toTheUrl")}
       </div>
     )
   }
@@ -62,7 +64,7 @@ function DisputesContent() {
         const res = await fetch(`${API_BASE}/dispute/v1/list?did=${encodeURIComponent(did)}`)
         if (res.status === 401 || res.status === 403) {
           setDisputes([])
-          setError('Authentication required. Dispute listing requires a signed request. Use the CLI to view disputes.')
+          setError(t("disputesPage.authRequired"))
           return
         }
         if (!res.ok) throw new Error(`API error: ${res.status}`)
@@ -81,21 +83,21 @@ function DisputesContent() {
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Disputes</h1>
+        <h1 className="text-2xl font-semibold">{t("disputesPage.title")}</h1>
         <Button
           variant="outline"
           onClick={() => navigator.clipboard.writeText('atel dispute <orderId> quality "your reason"')}
         >
-          Open Dispute
+          {t("disputesPage.openDispute")}
         </Button>
       </div>
 
-      {loading && <p className="text-muted-foreground">Loading disputes...</p>}
-      {error && <p className="text-destructive">Error: {error}</p>}
+      {loading && <p className="text-muted-foreground">{t("disputesPage.loadingDisputes")}</p>}
+      {error && <p className="text-destructive">{t("common.error")}: {error}</p>}
 
       {!loading && !error && disputes.length === 0 && (
         <div className="text-center py-12">
-          <p className="text-muted-foreground text-lg">No disputes found. That{"'"}s a good thing!</p>
+          <p className="text-muted-foreground text-lg">{t("disputesPage.noDisputes")}</p>
         </div>
       )}
 
@@ -103,12 +105,12 @@ function DisputesContent() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Dispute ID</TableHead>
-              <TableHead>Order ID</TableHead>
-              <TableHead>Reason</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Resolution</TableHead>
-              <TableHead>Date</TableHead>
+              <TableHead>{t("disputesPage.disputeId")}</TableHead>
+              <TableHead>{t("disputesPage.orderId")}</TableHead>
+              <TableHead>{t("disputesPage.reason")}</TableHead>
+              <TableHead>{t("common.status")}</TableHead>
+              <TableHead>{t("disputesPage.resolution")}</TableHead>
+              <TableHead>{t("common.date")}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -148,8 +150,9 @@ function DisputesContent() {
 }
 
 export default function DisputesPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <DisputesContent />
     </Suspense>
   )

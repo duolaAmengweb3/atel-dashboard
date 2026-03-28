@@ -29,6 +29,7 @@ import {
 import { getActiveAgent, getLinkedAgents, switchAgent, clearAuth, type AgentSession } from '@/lib/auth'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { useI18n } from '@/lib/i18n/context'
 
 export function NavUser({
   user,
@@ -41,6 +42,7 @@ export function NavUser({
 }) {
   const { isMobile } = useSidebar()
   const router = useRouter()
+  const { t } = useI18n()
   const [activeAgent, setActiveAgent] = useState<AgentSession | null>(null)
   const [agents, setAgents] = useState<AgentSession[]>([])
 
@@ -99,7 +101,7 @@ export function NavUser({
             {agents.length > 0 && (
               <>
                 <DropdownMenuLabel className="text-xs text-muted-foreground">
-                  Switch Agent
+                  {t("navUser.switchAgent")}
                 </DropdownMenuLabel>
                 <DropdownMenuGroup>
                   {agents.map((agent) => (
@@ -122,12 +124,12 @@ export function NavUser({
             )}
             <DropdownMenuItem onClick={handleLinkNew}>
               <IconPlus className="size-4" />
-              Link Another Agent
+              {t("navUser.linkAnother")}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <IconLogout className="size-4" />
-              Log out
+              {t("navUser.logOut")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

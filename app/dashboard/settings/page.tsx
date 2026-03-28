@@ -15,6 +15,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { getStoredAuth } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 function CodeBlock({ children }: { children: string }) {
   return (
@@ -24,50 +25,51 @@ function CodeBlock({ children }: { children: string }) {
   )
 }
 
-const AGENT_MODES = [
-  {
-    mode: 'auto',
-    label: 'Auto',
-    description: 'Agent executes tasks automatically without confirmation. Best for trusted, routine operations.',
-    variant: 'default' as const,
-  },
-  {
-    mode: 'confirm',
-    label: 'Confirm',
-    description: 'Agent asks for confirmation before executing each task. Recommended for most users.',
-    variant: 'secondary' as const,
-  },
-  {
-    mode: 'off',
-    label: 'Off',
-    description: 'Agent is disabled and will not process any incoming tasks or messages.',
-    variant: 'outline' as const,
-  },
-]
-
 function SettingsContent() {
   const auth = getStoredAuth()
+  const { t } = useI18n()
+
+  const AGENT_MODES = [
+    {
+      mode: 'auto',
+      label: t("settingsPage.auto"),
+      description: t("settingsPage.autoDesc"),
+      variant: 'default' as const,
+    },
+    {
+      mode: 'confirm',
+      label: t("settingsPage.confirm"),
+      description: t("settingsPage.confirmDesc"),
+      variant: 'secondary' as const,
+    },
+    {
+      mode: 'off',
+      label: t("settingsPage.off"),
+      description: t("settingsPage.offDesc"),
+      variant: 'outline' as const,
+    },
+  ]
 
   if (!auth) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
+        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginToView")}
       </div>
     )
   }
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Settings</h1>
+      <h1 className="text-2xl font-semibold">{t("settingsPage.title")}</h1>
 
       {/* Agent Policy */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <IconRobot className="h-5 w-5" />
-            Agent Policy
+            {t("settingsPage.agentPolicy")}
           </CardTitle>
-          <CardDescription>Configure how your agent handles incoming tasks</CardDescription>
+          <CardDescription>{t("settingsPage.agentPolicyDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
@@ -91,32 +93,29 @@ function SettingsContent() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <IconBell className="h-5 w-5" />
-            Notifications
+            {t("settingsPage.notifications")}
           </CardTitle>
-          <CardDescription>Configure Telegram notifications for your agent</CardDescription>
+          <CardDescription>{t("settingsPage.notificationsDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-              ATEL can send notifications to your Telegram account when your agent receives
-              tasks, completes orders, or encounters issues. You need a Telegram bot token
-              configured in your agent settings.
+              {t("settingsPage.notifyExplanation")}
             </p>
             <div>
-              <p className="text-sm font-medium">Bind your Telegram chat ID:</p>
+              <p className="text-sm font-medium">{t("settingsPage.bindTelegram")}</p>
               <CodeBlock>{`atel notify bind <chatId>`}</CodeBlock>
             </div>
             <div>
-              <p className="text-sm font-medium">Check notification status:</p>
+              <p className="text-sm font-medium">{t("settingsPage.checkNotifyStatus")}</p>
               <CodeBlock>atel notify status</CodeBlock>
             </div>
             <div>
-              <p className="text-sm font-medium">Send a test notification:</p>
+              <p className="text-sm font-medium">{t("settingsPage.sendTestNotify")}</p>
               <CodeBlock>atel notify test</CodeBlock>
             </div>
             <p className="text-xs text-muted-foreground">
-              Note: Make sure your agent&apos;s <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">botToken</code> is
-              configured before binding notifications.
+              {t("settingsPage.notifyNote")} <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">botToken</code> {t("settingsPage.notifyNoteEnd")}
             </p>
           </div>
         </CardContent>
@@ -127,34 +126,32 @@ function SettingsContent() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <IconAt className="h-5 w-5" />
-            Aliases
+            {t("settingsPage.aliases")}
           </CardTitle>
-          <CardDescription>Manage friendly names for DIDs you interact with frequently</CardDescription>
+          <CardDescription>{t("settingsPage.aliasesDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
             <p className="text-sm text-muted-foreground">
-              Aliases let you use short, memorable names instead of full DIDs in commands.
-              For example, instead of typing a full DID, you can use <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">@alice</code> in
-              any command that accepts a DID.
+              {t("settingsPage.aliasExplanation")} <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">@alice</code> {t("settingsPage.aliasExplanationEnd")}
             </p>
             <div>
-              <p className="text-sm font-medium">Set an alias:</p>
+              <p className="text-sm font-medium">{t("settingsPage.setAlias")}</p>
               <CodeBlock>{`atel alias set <name> <DID>`}</CodeBlock>
             </div>
             <div>
-              <p className="text-sm font-medium">List all aliases:</p>
+              <p className="text-sm font-medium">{t("settingsPage.listAliases")}</p>
               <CodeBlock>atel alias list</CodeBlock>
             </div>
             <div>
-              <p className="text-sm font-medium">Remove an alias:</p>
+              <p className="text-sm font-medium">{t("settingsPage.removeAlias")}</p>
               <CodeBlock>{`atel alias remove <name>`}</CodeBlock>
             </div>
             <div className="border rounded-lg p-3 bg-muted/50">
               <p className="text-sm">
-                <span className="font-medium">Usage example:</span>{' '}
-                Once you set <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">atel alias set alice did:atel:ed25519:abc...</code>,
-                you can use <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">atel send @alice &quot;hello&quot;</code> instead of the full DID.
+                <span className="font-medium">{t("settingsPage.usageExample")}</span>{' '}
+                {t("settingsPage.usageExampleText1")} <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">atel alias set alice did:atel:ed25519:abc...</code>,
+                {' '}{t("settingsPage.usageExampleText2")} <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">atel send @alice &quot;hello&quot;</code> {t("settingsPage.usageExampleText3")}
               </p>
             </div>
           </div>
@@ -165,8 +162,9 @@ function SettingsContent() {
 }
 
 export default function SettingsPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <SettingsContent />
     </Suspense>
   )

@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from 'react'
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { getStoredAuth } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -28,11 +29,12 @@ function truncateAddress(addr: string): string {
 
 function DepositContent() {
   const auth = getStoredAuth()
+  const { t } = useI18n()
 
   if (!auth) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
+        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginToView")}
       </div>
     )
   }
@@ -69,7 +71,6 @@ function DepositContent() {
       setCopiedChain(chain)
       setTimeout(() => setCopiedChain(null), 2000)
     } catch {
-      // Clipboard API failed (e.g. insecure context); address is already visible on screen
       setCopiedChain('error')
     }
   }
@@ -77,15 +78,15 @@ function DepositContent() {
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold">Deposit</h1>
-        <p className="text-muted-foreground mt-1">Fund your ATEL account by sending USDC to one of the addresses below.</p>
+        <h1 className="text-2xl font-semibold">{t("depositPage.title")}</h1>
+        <p className="text-muted-foreground mt-1">{t("depositPage.subtitle")}</p>
       </div>
 
-      {loading && <p className="text-muted-foreground">Loading deposit info...</p>}
-      {error && <p className="text-destructive">Error: {error}</p>}
+      {loading && <p className="text-muted-foreground">{t("depositPage.loadingDeposit")}</p>}
+      {error && <p className="text-destructive">{t("common.error")}: {error}</p>}
 
       {!loading && !error && chains.length === 0 && (
-        <p className="text-muted-foreground">No deposit addresses available. Please contact support.</p>
+        <p className="text-muted-foreground">{t("depositPage.noAddresses")}</p>
       )}
 
       {!loading && !error && chains.length > 0 && (
@@ -99,7 +100,7 @@ function DepositContent() {
                   </span>
                   {info.chain}
                 </CardTitle>
-                <CardDescription>Token: {info.token || 'USDC'}</CardDescription>
+                <CardDescription>{t("depositPage.token")}: {info.token || 'USDC'}</CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
                 <div className="flex items-center gap-2">
@@ -111,12 +112,12 @@ function DepositContent() {
                     size="sm"
                     onClick={() => copyAddress(info.chain, info.address)}
                   >
-                    {copiedChain === info.chain ? 'Copied!' : 'Copy'}
+                    {copiedChain === info.chain ? t("common.copied") : t("common.copy")}
                   </Button>
                 </div>
                 {info.minimumAmount && (
                   <p className="text-xs text-muted-foreground">
-                    Minimum: {info.minimumAmount} {info.token || 'USDC'}
+                    {t("depositPage.minimum")}: {info.minimumAmount} {info.token || 'USDC'}
                   </p>
                 )}
               </CardContent>
@@ -126,22 +127,23 @@ function DepositContent() {
       )}
 
       <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-4 text-sm">
-        <p className="font-medium text-yellow-600 dark:text-yellow-400">Important</p>
+        <p className="font-medium text-yellow-600 dark:text-yellow-400">{t("depositPage.important")}</p>
         <p className="text-muted-foreground mt-1">
-          Send USDC only. Do NOT send native tokens (SOL/ETH/BNB). Sending unsupported tokens may result in permanent loss of funds.
+          {t("depositPage.sendUsdcOnly")}
         </p>
       </div>
 
       <div className="text-sm text-muted-foreground">
-        For manual deposits, contact admin.
+        {t("depositPage.manualDeposit")}
       </div>
     </div>
   )
 }
 
 export default function DepositPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <DepositContent />
     </Suspense>
   )

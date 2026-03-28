@@ -18,16 +18,18 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { getStoredAuth } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
 function WithdrawContent() {
   const auth = getStoredAuth()
+  const { t } = useI18n()
 
   if (!auth) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
+        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginToView")}
       </div>
     )
   }
@@ -65,32 +67,32 @@ function WithdrawContent() {
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold">Withdraw</h1>
-        <p className="text-muted-foreground mt-1">Withdraw USDC from your ATEL account to an external wallet.</p>
+        <h1 className="text-2xl font-semibold">{t("withdrawPage.title")}</h1>
+        <p className="text-muted-foreground mt-1">{t("withdrawPage.subtitle")}</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Current Balance</CardTitle>
+          <CardTitle className="text-base">{t("withdrawPage.currentBalance")}</CardTitle>
         </CardHeader>
         <CardContent>
           {loadingBalance ? (
-            <p className="text-muted-foreground">Loading balance...</p>
+            <p className="text-muted-foreground">{t("withdrawPage.loadingBalance")}</p>
           ) : balance !== null ? (
             <p className="text-2xl font-bold">${Number(balance).toFixed(2)} <span className="text-sm font-normal text-muted-foreground">USDC</span></p>
           ) : (
-            <p className="text-muted-foreground">Unable to load balance</p>
+            <p className="text-muted-foreground">{t("withdrawPage.unableToLoad")}</p>
           )}
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-base">Withdrawal Form</CardTitle>
+          <CardTitle className="text-base">{t("withdrawPage.withdrawalForm")}</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Amount (USDC)</label>
+            <label className="text-sm font-medium">{t("withdrawPage.amountLabel")}</label>
             <Input
               type="number"
               placeholder="0.00"
@@ -102,10 +104,10 @@ function WithdrawContent() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Chain</label>
+            <label className="text-sm font-medium">{t("withdrawPage.chainLabel")}</label>
             <Select value={chain} onValueChange={setChain}>
               <SelectTrigger>
-                <SelectValue placeholder="Select chain" />
+                <SelectValue placeholder={t("withdrawPage.selectChain")} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="base">Base</SelectItem>
@@ -115,14 +117,14 @@ function WithdrawContent() {
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium">Destination Address</label>
+            <label className="text-sm font-medium">{t("withdrawPage.destAddress")}</label>
             <Input
               type="text"
               placeholder="0x..."
               value={address}
               onChange={(e) => setAddress(e.target.value)}
             />
-            <p className="text-xs text-muted-foreground">Enter a valid EVM address (0x...)</p>
+            <p className="text-xs text-muted-foreground">{t("withdrawPage.evmHint")}</p>
           </div>
 
           <TooltipProvider>
@@ -130,7 +132,7 @@ function WithdrawContent() {
               <TooltipTrigger asChild>
                 <span className="w-fit">
                   <Button disabled>
-                    Withdraw
+                    {t("withdrawPage.withdrawBtn")}
                   </Button>
                 </span>
               </TooltipTrigger>
@@ -143,9 +145,9 @@ function WithdrawContent() {
       </Card>
 
       <div className="rounded-lg border border-yellow-500/30 bg-yellow-500/5 p-4 text-sm">
-        <p className="font-medium text-yellow-600 dark:text-yellow-400">Warning</p>
+        <p className="font-medium text-yellow-600 dark:text-yellow-400">{t("withdrawPage.warning")}</p>
         <p className="text-muted-foreground mt-1">
-          Withdrawals are processed on-chain. Please verify the destination address. Transactions cannot be reversed once submitted.
+          {t("withdrawPage.warningText")}
         </p>
       </div>
     </div>
@@ -153,8 +155,9 @@ function WithdrawContent() {
 }
 
 export default function WithdrawPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <WithdrawContent />
     </Suspense>
   )

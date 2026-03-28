@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/card'
 import { getDID, getStoredAuth } from '@/lib/auth'
 import { API_BASE } from '@/lib/config'
+import { useI18n } from '@/lib/i18n/context'
 
 interface TrustHistoryEvent {
   eventType: string
@@ -24,12 +25,13 @@ function DashboardContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
   const isAuthed = !!getStoredAuth()
+  const { t } = useI18n()
 
   if (!did) {
     return (
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
         <div className="px-4 lg:px-6 text-muted-foreground">
-          Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
+          {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginOrDid")} <code className="bg-muted px-1 rounded">?did=your-did</code> {t("common.toTheUrl")}
         </div>
       </div>
     )
@@ -105,7 +107,7 @@ function DashboardContent() {
   if (loading) {
     return (
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-        <div className="px-4 lg:px-6 text-muted-foreground">Loading dashboard...</div>
+        <div className="px-4 lg:px-6 text-muted-foreground">{t("overview.loadingDashboard")}</div>
       </div>
     )
   }
@@ -113,7 +115,7 @@ function DashboardContent() {
   if (error) {
     return (
       <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-        <div className="px-4 lg:px-6 text-destructive">Error: {error}</div>
+        <div className="px-4 lg:px-6 text-destructive">{t("common.error")}: {error}</div>
       </div>
     )
   }
@@ -134,14 +136,14 @@ function DashboardContent() {
       {!isAuthed && (
         <div className="px-4 lg:px-6">
           <p className="text-sm text-muted-foreground">
-            <a href="/login" className="text-primary underline underline-offset-4">Log in</a> to view your balance and access private data.
+            <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("overview.loginForBalance")}
           </p>
         </div>
       )}
       <div className="px-4 lg:px-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-base">Trust Score Trend</CardTitle>
+            <CardTitle className="text-base">{t("overview.trustScoreTrend")}</CardTitle>
           </CardHeader>
           <CardContent>
             {trustData.length > 0 ? (
@@ -155,7 +157,7 @@ function DashboardContent() {
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-muted-foreground text-sm py-8 text-center">No trust history yet. Complete orders to build your trust score.</p>
+              <p className="text-muted-foreground text-sm py-8 text-center">{t("overview.noTrustHistory")}</p>
             )}
           </CardContent>
         </Card>
@@ -165,8 +167,9 @@ function DashboardContent() {
 }
 
 export default function Page() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <DashboardContent />
     </Suspense>
   )

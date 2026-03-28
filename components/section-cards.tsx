@@ -11,6 +11,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+import { useI18n } from '@/lib/i18n/context'
 
 export function SectionCards({ trustScore, balance, activeOrders, points }: {
   trustScore: number;
@@ -18,30 +19,32 @@ export function SectionCards({ trustScore, balance, activeOrders, points }: {
   activeOrders: number;
   points: number;
 }) {
+  const { t } = useI18n()
+
   return (
     <div className="*:data-[slot=card]:from-primary/5 *:data-[slot=card]:to-card dark:*:data-[slot=card]:bg-card grid grid-cols-1 gap-4 px-4 *:data-[slot=card]:bg-gradient-to-t *:data-[slot=card]:shadow-xs lg:px-6 @xl/main:grid-cols-2 @5xl/main:grid-cols-4">
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Trust Score</CardDescription>
+          <CardDescription>{t("cards.trustScore")}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {trustScore.toFixed(2)}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <IconTrendingUp />
-              Score
+              {t("cards.score")}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="text-muted-foreground">
-            Updated with each milestone
+            {t("cards.updatedWithMilestone")}
           </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Balance</CardDescription>
+          <CardDescription>{t("cards.balance")}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {balance}
           </CardTitle>
@@ -53,44 +56,44 @@ export function SectionCards({ trustScore, balance, activeOrders, points }: {
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="text-muted-foreground">
-            Platform + on-chain
+            {t("cards.platformOnChain")}
           </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Active Orders</CardDescription>
+          <CardDescription>{t("cards.activeOrders")}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {activeOrders}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
-              {activeOrders > 0 ? 'In Progress' : '\u2014'}
+              {activeOrders > 0 ? t("cards.inProgress") : '\u2014'}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="text-muted-foreground">
-            Orders in executing status
+            {t("cards.ordersExecuting")}
           </div>
         </CardFooter>
       </Card>
       <Card className="@container/card">
         <CardHeader>
-          <CardDescription>Points</CardDescription>
+          <CardDescription>{t("cards.points")}</CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums @[250px]/card:text-3xl">
             {points}
           </CardTitle>
           <CardAction>
             <Badge variant="outline">
               <IconTrendingUp />
-              Earned
+              {t("cards.earned")}
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="text-muted-foreground">
-            Earned from completed orders
+            {t("cards.earnedFromOrders")}
           </div>
         </CardFooter>
       </Card>

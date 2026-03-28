@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { linkAgent, getLinkedAgents } from "@/lib/auth";
+import { useI18n } from "@/lib/i18n/context";
 
 import { API_BASE } from '@/lib/config';
 
@@ -10,6 +11,7 @@ const API = API_BASE;
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useI18n();
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<"loading" | "pending" | "verified" | "expired" | "error">("loading");
   const [error, setError] = useState("");
@@ -23,7 +25,7 @@ export default function LoginPage() {
         setStatus("pending");
       })
       .catch(() => {
-        setError("Failed to connect to server");
+        setError(t("login.failedConnect"));
         setStatus("error");
       });
   }, []);
@@ -61,7 +63,7 @@ export default function LoginPage() {
         setStatus("pending");
       })
       .catch(() => {
-        setError("Failed to connect to server");
+        setError(t("login.failedConnect"));
         setStatus("error");
       });
   }
@@ -69,14 +71,14 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center max-w-md p-8">
-        <h1 className="text-3xl font-bold">ATEL Dashboard</h1>
+        <h1 className="text-3xl font-bold">{t("login.title")}</h1>
         <p className="text-muted-foreground mt-4">
-          Connect your agent to access the dashboard.
+          {t("login.subtitle")}
         </p>
 
         {status === "loading" && (
           <div className="mt-8 p-6 border rounded-lg bg-card">
-            <p className="text-muted-foreground">Generating authorization code...</p>
+            <p className="text-muted-foreground">{t("login.generating")}</p>
           </div>
         )}
 
@@ -87,7 +89,7 @@ export default function LoginPage() {
               onClick={handleRetry}
               className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 transition-opacity"
             >
-              Retry
+              {t("common.retry")}
             </button>
           </div>
         )}
@@ -95,20 +97,20 @@ export default function LoginPage() {
         {status === "pending" && (
           <div className="mt-8 p-6 border rounded-lg bg-card">
             <p className="text-sm text-muted-foreground mb-4">
-              Your authorization code:
+              {t("login.yourCode")}
             </p>
             <p className="text-4xl font-mono font-bold tracking-widest">
               {code}
             </p>
             <p className="text-xs text-muted-foreground mt-4">
-              Run this command in your terminal:
+              {t("login.runCommand")}
             </p>
             <code className="block mt-2 p-3 bg-muted rounded text-sm font-mono">
               atel auth {code}
             </code>
             <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground text-xs">
               <span className="inline-block w-2 h-2 rounded-full bg-yellow-500 animate-pulse" />
-              Waiting for authorization...
+              {t("login.waiting")}
             </div>
           </div>
         )}
@@ -116,25 +118,25 @@ export default function LoginPage() {
         {status === "verified" && (
           <div className="mt-8 p-6 border rounded-lg bg-card">
             <p className="text-green-600 font-semibold">
-              Authorization successful! Redirecting...
+              {t("login.success")}
             </p>
           </div>
         )}
 
         {status === "expired" && (
           <div className="mt-8 p-6 border rounded-lg bg-card">
-            <p className="text-muted-foreground">Code expired.</p>
+            <p className="text-muted-foreground">{t("login.expired")}</p>
             <button
               onClick={handleRetry}
               className="mt-4 px-4 py-2 bg-primary text-primary-foreground rounded hover:opacity-90 transition-opacity"
             >
-              Get New Code
+              {t("login.getNewCode")}
             </button>
           </div>
         )}
 
         <p className="text-xs text-muted-foreground mt-6">
-          Code expires in 5 minutes
+          {t("login.codeExpires")}
         </p>
       </div>
     </div>

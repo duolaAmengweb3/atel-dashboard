@@ -20,6 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getDID } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -55,6 +56,7 @@ function explorerLink(chain: string | undefined, txHash: string | undefined): st
 function TrustContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
+  const { t } = useI18n()
 
   const [trustScore, setTrustScore] = useState(0)
   const [trustHistory, setTrustHistory] = useState<TrustEvent[]>([])
@@ -112,14 +114,14 @@ function TrustContent() {
   if (!did) {
     return (
       <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold">Trust & Points</h1>
+        <h1 className="text-2xl font-semibold">{t("trustPage.title")}</h1>
         <p className="text-muted-foreground">
-          Enter a DID to view trust history, or{' '}
-          <a href="/login" className="text-primary underline underline-offset-4">log in</a>{' '}
-          to view your own.
+          {t("trustPage.enterDid")}{' '}
+          <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a>{' '}
+          {t("trustPage.toViewOwn")}
         </p>
         <p className="text-sm text-muted-foreground">
-          Append <code className="bg-muted px-1 rounded">?did=did:atel:...</code> to the URL to look up any agent.
+          {t("trustPage.appendDid")} <code className="bg-muted px-1 rounded">?did=did:atel:...</code> {t("trustPage.toLookup")}
         </p>
       </div>
     )
@@ -128,7 +130,7 @@ function TrustContent() {
   if (loading) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-muted-foreground">Loading trust & points...</p>
+        <p className="text-muted-foreground">{t("trustPage.loadingTrust")}</p>
       </div>
     )
   }
@@ -136,27 +138,27 @@ function TrustContent() {
   if (error) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-destructive">Error: {error}</p>
+        <p className="text-destructive">{t("common.error")}: {error}</p>
       </div>
     )
   }
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Trust & Points</h1>
+      <h1 className="text-2xl font-semibold">{t("trustPage.title")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
-            <CardTitle>Trust Score</CardTitle>
+            <CardTitle>{t("trustPage.trustScore")}</CardTitle>
             <CardDescription>
               {trendUp ? (
                 <span className="flex items-center gap-1 text-green-500">
-                  <IconTrendingUp className="h-4 w-4" /> Trending up
+                  <IconTrendingUp className="h-4 w-4" /> {t("trustPage.trendingUp")}
                 </span>
               ) : (
                 <span className="flex items-center gap-1 text-red-500">
-                  <IconTrendingDown className="h-4 w-4" /> Trending down
+                  <IconTrendingDown className="h-4 w-4" /> {t("trustPage.trendingDown")}
                 </span>
               )}
             </CardDescription>
@@ -168,21 +170,21 @@ function TrustContent() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Points Summary</CardTitle>
+            <CardTitle>{t("trustPage.pointsSummary")}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-3 gap-4 text-center">
               <div>
                 <div className="text-3xl font-bold tabular-nums">{points?.availablePoints ?? 0}</div>
-                <div className="text-sm text-muted-foreground">Available</div>
+                <div className="text-sm text-muted-foreground">{t("trustPage.available")}</div>
               </div>
               <div>
                 <div className="text-3xl font-bold tabular-nums text-green-500">{points?.totalEarned ?? 0}</div>
-                <div className="text-sm text-muted-foreground">Earned</div>
+                <div className="text-sm text-muted-foreground">{t("trustPage.earned")}</div>
               </div>
               <div>
                 <div className="text-3xl font-bold tabular-nums text-red-500">{points?.totalSpent ?? 0}</div>
-                <div className="text-sm text-muted-foreground">Spent</div>
+                <div className="text-sm text-muted-foreground">{t("trustPage.spent")}</div>
               </div>
             </div>
           </CardContent>
@@ -191,20 +193,20 @@ function TrustContent() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Trust Events</CardTitle>
+          <CardTitle>{t("trustPage.trustEvents")}</CardTitle>
         </CardHeader>
         <CardContent>
           {trustHistory.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No trust events found</p>
+            <p className="text-muted-foreground text-sm">{t("trustPage.noTrustEvents")}</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Delta</TableHead>
-                  <TableHead>Score After</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Chain</TableHead>
+                  <TableHead>{t("common.type")}</TableHead>
+                  <TableHead>{t("trustPage.delta")}</TableHead>
+                  <TableHead>{t("trustPage.scoreAfter")}</TableHead>
+                  <TableHead>{t("common.date")}</TableHead>
+                  <TableHead>{t("common.chain")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -247,8 +249,9 @@ function TrustContent() {
 }
 
 export default function TrustPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <TrustContent />
     </Suspense>
   )

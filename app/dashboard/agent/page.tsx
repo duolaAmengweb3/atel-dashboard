@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getDID } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
 
@@ -55,6 +56,7 @@ function truncateDid(did: string): string {
 function AgentContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
+  const { t } = useI18n()
 
   const [agent, setAgent] = useState<Agent | null>(null)
   const [trustHistory, setTrustHistory] = useState<TrustEvent[]>([])
@@ -82,7 +84,7 @@ function AgentContent() {
         if (agentRes.status === 'fulfilled' && agentRes.value.ok) {
           setAgent(await agentRes.value.json())
         } else {
-          throw new Error('Failed to load agent profile')
+          throw new Error(t("agent.failedLoad"))
         }
 
         if (historyRes.status === 'fulfilled' && historyRes.value.ok) {
@@ -101,7 +103,7 @@ function AgentContent() {
   if (!mounted || loading) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-muted-foreground">Loading...</p>
+        <p className="text-muted-foreground">{t("common.loading")}</p>
       </div>
     )
   }
@@ -109,14 +111,14 @@ function AgentContent() {
   if (!did) {
     return (
       <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
-        <h1 className="text-2xl font-semibold">Agent Profile</h1>
+        <h1 className="text-2xl font-semibold">{t("agent.title")}</h1>
         <p className="text-muted-foreground">
-          Enter a DID to view an agent profile, or{' '}
-          <a href="/login" className="text-primary underline underline-offset-4">log in</a>{' '}
-          to view your own.
+          {t("agent.enterDid")}{' '}
+          <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a>{' '}
+          {t("agent.toViewOwn")}
         </p>
         <p className="text-sm text-muted-foreground">
-          Append <code className="bg-muted px-1 rounded">?did=did:atel:...</code> to the URL to look up any agent.
+          {t("agent.appendDid")} <code className="bg-muted px-1 rounded">?did=did:atel:...</code> {t("agent.toLookup")}
         </p>
       </div>
     )
@@ -125,7 +127,7 @@ function AgentContent() {
   if (error || !agent) {
     return (
       <div className="px-4 lg:px-6 py-6">
-        <p className="text-destructive">Error: {error ?? 'Agent not found'}</p>
+        <p className="text-destructive">{t("common.error")}: {error ?? t("agent.agentNotFound")}</p>
       </div>
     )
   }
@@ -137,7 +139,7 @@ function AgentContent() {
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Agent Profile</h1>
+      <h1 className="text-2xl font-semibold">{t("agent.title")}</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Agent Info */}
@@ -150,14 +152,14 @@ function AgentContent() {
           </CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm">
             <div>
-              <span className="text-muted-foreground">Verified: </span>
+              <span className="text-muted-foreground">{t("agent.verified")}: </span>
               <Badge variant={agent.verified ? 'default' : 'outline'}>
-                {agent.verified ? 'Yes' : 'No'}
+                {agent.verified ? t("common.yes") : t("common.no")}
               </Badge>
             </div>
             {capabilities.length > 0 && (
               <div>
-                <span className="text-muted-foreground">Capabilities: </span>
+                <span className="text-muted-foreground">{t("agent.capabilities")}: </span>
                 <div className="flex flex-wrap gap-1 mt-1">
                   {capabilities.map((cap: any, i: number) => (
                     <Badge key={i} variant="secondary">{typeof cap === 'string' ? cap : cap?.type || 'unknown'}</Badge>
@@ -171,7 +173,7 @@ function AgentContent() {
         {/* Trust Score */}
         <Card>
           <CardHeader>
-            <CardTitle>Trust Score</CardTitle>
+            <CardTitle>{t("agent.trustScore")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3">
             <div className="text-5xl font-bold tabular-nums">
@@ -179,7 +181,7 @@ function AgentContent() {
             </div>
             {(agent.trustLevel ?? agent.trust_level) && (
               <Badge variant="outline" className="w-fit">
-                Level: {agent.trustLevel ?? agent.trust_level}
+                {t("agent.level")}: {agent.trustLevel ?? agent.trust_level}
               </Badge>
             )}
           </CardContent>
@@ -188,11 +190,11 @@ function AgentContent() {
         {/* Wallets */}
         <Card>
           <CardHeader>
-            <CardTitle>Wallets</CardTitle>
+            <CardTitle>{t("agent.wallets")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-2 text-sm">
             {Object.keys(wallets).length === 0 ? (
-              <p className="text-muted-foreground">No wallets configured</p>
+              <p className="text-muted-foreground">{t("agent.noWallets")}</p>
             ) : (
               Object.entries(wallets).map(([chain, address]) => (
                 <div key={chain}>
@@ -207,19 +209,19 @@ function AgentContent() {
         {/* Certification & Boost */}
         <Card>
           <CardHeader>
-            <CardTitle>Certification & Boost</CardTitle>
+            <CardTitle>{t("agent.certAndBoost")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm">
             <div>
-              <span className="text-muted-foreground">Certification: </span>
+              <span className="text-muted-foreground">{t("agent.certLabel")}: </span>
               <Badge variant={(certification.status as string) === 'certified' ? 'default' : 'outline'}>
-                {(certification.status as string) ?? 'None'}
+                {(certification.status as string) ?? t("common.none")}
               </Badge>
             </div>
             <div>
-              <span className="text-muted-foreground">Boost: </span>
+              <span className="text-muted-foreground">{t("agent.boostLabel")}: </span>
               <Badge variant={(boost.active as boolean) ? 'default' : 'outline'}>
-                {(boost.active as boolean) ? `Active (${(boost.multiplier as string) ?? '1'}x)` : 'Inactive'}
+                {(boost.active as boolean) ? `${t("common.active")} (${(boost.multiplier as string) ?? '1'}x)` : t("common.inactive")}
               </Badge>
             </div>
           </CardContent>
@@ -229,20 +231,20 @@ function AgentContent() {
       {/* Trust Events */}
       <Card>
         <CardHeader>
-          <CardTitle>Recent Trust Events</CardTitle>
+          <CardTitle>{t("agent.recentTrustEvents")}</CardTitle>
         </CardHeader>
         <CardContent>
           {trustHistory.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No trust events found</p>
+            <p className="text-muted-foreground text-sm">{t("agent.noTrustEvents")}</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>Delta</TableHead>
-                  <TableHead>Score After</TableHead>
-                  <TableHead>Date</TableHead>
-                  <TableHead>Order</TableHead>
+                  <TableHead>{t("common.type")}</TableHead>
+                  <TableHead>{t("agent.delta")}</TableHead>
+                  <TableHead>{t("agent.scoreAfter")}</TableHead>
+                  <TableHead>{t("common.date")}</TableHead>
+                  <TableHead>{t("agent.order")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -271,8 +273,9 @@ function AgentContent() {
 }
 
 export default function AgentPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <AgentContent />
     </Suspense>
   )

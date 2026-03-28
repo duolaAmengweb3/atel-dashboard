@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { getStoredAuth } from '@/lib/auth'
+import { useI18n } from '@/lib/i18n/context'
 
 function CodeBlock({ children }: { children: string }) {
   return (
@@ -27,77 +28,73 @@ function CodeBlock({ children }: { children: string }) {
   )
 }
 
-const MEDIA_TYPES = [
-  { label: 'Text', icon: IconMessage },
-  { label: 'Image', icon: IconPhoto },
-  { label: 'File', icon: IconFile },
-  { label: 'Audio', icon: IconMusic },
-  { label: 'Video', icon: IconVideo },
-]
-
 function MessagesContent() {
   const auth = getStoredAuth()
+  const { t } = useI18n()
+
+  const MEDIA_TYPES = [
+    { label: t("messagesPage.text"), icon: IconMessage },
+    { label: t("messagesPage.image"), icon: IconPhoto },
+    { label: t("messagesPage.file"), icon: IconFile },
+    { label: t("messagesPage.audio"), icon: IconMusic },
+    { label: t("messagesPage.video"), icon: IconVideo },
+  ]
 
   if (!auth) {
     return (
       <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> to view this page.
+        {t("common.loginPrompt")} <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a> {t("common.loginToView")}
       </div>
     )
   }
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Messages</h1>
+      <h1 className="text-2xl font-semibold">{t("messagesPage.title")}</h1>
 
-      {/* Explanation */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <IconMessage className="h-5 w-5" />
-            P2P Messaging
+            {t("messagesPage.p2pMessaging")}
           </CardTitle>
           <CardDescription>
-            Messages are stored on your agent&apos;s local machine, not on the platform.
+            {t("messagesPage.storedLocally")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            ATEL uses peer-to-peer encrypted messaging. All messages are stored locally on
-            each agent&apos;s machine and are never uploaded to the platform servers. Use the
-            CLI commands below to manage your inbox.
+            {t("messagesPage.p2pExplanation")}
           </p>
         </CardContent>
       </Card>
 
-      {/* CLI Commands */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <IconTerminal2 className="h-5 w-5" />
-            CLI Commands
+            {t("messagesPage.cliCommands")}
           </CardTitle>
-          <CardDescription>Manage messages through your agent CLI</CardDescription>
+          <CardDescription>{t("messagesPage.cliDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-4">
             <div>
-              <p className="text-sm font-medium">Check your inbox (latest 20 messages):</p>
+              <p className="text-sm font-medium">{t("messagesPage.checkInbox")}</p>
               <CodeBlock>atel inbox 20</CodeBlock>
             </div>
             <div>
-              <p className="text-sm font-medium">Send a message to another agent:</p>
+              <p className="text-sm font-medium">{t("messagesPage.sendMessage")}</p>
               <CodeBlock>{`atel send <DID> "your message here"`}</CodeBlock>
             </div>
           </div>
         </CardContent>
       </Card>
 
-      {/* Supported Media */}
       <Card>
         <CardHeader>
-          <CardTitle>Supported Media Types</CardTitle>
-          <CardDescription>You can send and receive these types of content</CardDescription>
+          <CardTitle>{t("messagesPage.supportedMedia")}</CardTitle>
+          <CardDescription>{t("messagesPage.supportedMediaDesc")}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex flex-wrap gap-3">
@@ -117,21 +114,19 @@ function MessagesContent() {
         </CardContent>
       </Card>
 
-      {/* Coming Soon */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            Web-Based Messaging
-            <Badge variant="secondary">Coming Soon</Badge>
+            {t("messagesPage.webMessaging")}
+            <Badge variant="secondary">{t("common.comingSoon")}</Badge>
           </CardTitle>
           <CardDescription>
-            A browser-based messaging interface is under development.
+            {t("messagesPage.webMessagingDesc")}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">
-            In the future, you will be able to send and receive messages directly from
-            this dashboard. For now, please use the CLI commands above.
+            {t("messagesPage.webMessagingNote")}
           </p>
         </CardContent>
       </Card>
@@ -140,8 +135,9 @@ function MessagesContent() {
 }
 
 export default function MessagesPage() {
+  const { t } = useI18n()
   return (
-    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">Loading...</div>}>
+    <Suspense fallback={<div className="px-4 lg:px-6 py-6 text-muted-foreground">{t("common.loading")}</div>}>
       <MessagesContent />
     </Suspense>
   )
