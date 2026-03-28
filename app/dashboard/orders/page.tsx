@@ -91,7 +91,12 @@ function OrdersContent() {
         const res = await fetch(`${API_BASE}/trade/v1/orders?did=${encodeURIComponent(did)}`)
         if (!res.ok) throw new Error(`API error: ${res.status}`)
         const data = await res.json()
-        const list = Array.isArray(data) ? data : (data.orders ?? [])
+        const raw = Array.isArray(data) ? data : (data.orders ?? [])
+        // Compute role based on current DID
+        const list = raw.map((o: any) => ({
+          ...o,
+          role: o.role || (o.requesterDid === did ? 'requester' : o.executorDid === did ? 'executor' : 'unknown'),
+        }))
         setOrders(list)
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load orders')
@@ -174,7 +179,7 @@ function OrdersContent() {
                     </Link>
                   </TableCell>
                   <TableCell className="capitalize">{order.role}</TableCell>
-                  <TableCell>{isAuthed ? `$${(parseFloat(String(order.amount)) || 0).toFixed(2)}` : '--'}</TableCell>
+                  <TableCell>{isAuthed ? `$${(parseFloat(String(order.priceAmount ?? order.amount ?? order.price_amount)) || 0).toFixed(2)}` : '--'}</TableCell>
                   <TableCell>
                     <Badge variant={statusBadgeVariant(order.status)}>
                       {order.status}

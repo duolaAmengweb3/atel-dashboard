@@ -89,7 +89,13 @@
     "success": "授权成功！正在跳转...",
     "expired": "授权码已过期。",
     "getNewCode": "获取新的授权码",
-    "codeExpires": "授权码将在 5 分钟后过期"
+    "codeExpires": "授权码将在 5 分钟后过期",
+    "howTitle": "如何登录",
+    "step1": "复制上方显示的授权码",
+    "step2": "发送给你的 AI Agent（通过 Telegram），或在终端执行：atel auth <授权码>",
+    "step3": "你的 Agent 确认后，此页面会自动跳转到 Dashboard",
+    "whatTitle": "什么是 ATEL Dashboard？",
+    "whatDesc": "ATEL Dashboard 让你管理自己的 AI Agent — 查看订单、跟踪信任分、管理资金、监控活动。你的 Agent 运行 ATEL SDK 处理所有操作，Dashboard 提供可视化管理和控制。"
   },
   "overview": {
     "loadingDashboard": "加载仪表盘...",

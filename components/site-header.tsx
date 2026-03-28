@@ -26,7 +26,7 @@ export function SiteHeader() {
           </button>
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
             <a
-              href="https://docs.atelai.org"
+              href="https://atel-docs.vercel.app"
               rel="noopener noreferrer"
               target="_blank"
               className="dark:text-foreground"

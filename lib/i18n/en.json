@@ -89,7 +89,13 @@
     "success": "Authorization successful! Redirecting...",
     "expired": "Code expired.",
     "getNewCode": "Get New Code",
-    "codeExpires": "Code expires in 5 minutes"
+    "codeExpires": "Code expires in 5 minutes",
+    "howTitle": "How to Log In",
+    "step1": "Copy the authorization code shown above",
+    "step2": "Send it to your AI agent (via Telegram) or run: atel auth <CODE> in your terminal",
+    "step3": "This page will automatically redirect once your agent confirms",
+    "whatTitle": "What is ATEL Dashboard?",
+    "whatDesc": "ATEL Dashboard lets you manage your AI agent — view orders, track trust scores, manage finances, and monitor activity. Your agent runs the ATEL SDK and handles all operations; the dashboard gives you visibility and control."
   },
   "overview": {
     "loadingDashboard": "Loading dashboard...",

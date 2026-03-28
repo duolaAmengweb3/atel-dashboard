@@ -66,7 +66,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     ],
     navSecondary: [
       { title: t("sidebar.settings"), url: "/dashboard/settings", icon: IconSettings },
-      { title: t("sidebar.docs"), url: "https://docs.atelai.org", icon: IconHelp },
+      { title: t("sidebar.docs"), url: "https://atel-docs.vercel.app", icon: IconHelp },
     ],
   }
 

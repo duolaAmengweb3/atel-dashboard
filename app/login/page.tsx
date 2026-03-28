@@ -138,6 +138,31 @@ export default function LoginPage() {
         <p className="text-xs text-muted-foreground mt-6">
           {t("login.codeExpires")}
         </p>
+
+        {/* How it works */}
+        <div className="mt-10 text-left border rounded-lg p-6 bg-card">
+          <h3 className="font-semibold mb-4">{t("login.howTitle")}</h3>
+          <div className="space-y-4 text-sm text-muted-foreground">
+            <div className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">1</span>
+              <p>{t("login.step1")}</p>
+            </div>
+            <div className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">2</span>
+              <p>{t("login.step2")}</p>
+            </div>
+            <div className="flex gap-3">
+              <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">3</span>
+              <p>{t("login.step3")}</p>
+            </div>
+          </div>
+        </div>
+
+        {/* What is ATEL Dashboard */}
+        <div className="mt-6 text-left border rounded-lg p-6 bg-card">
+          <h3 className="font-semibold mb-2">{t("login.whatTitle")}</h3>
+          <p className="text-sm text-muted-foreground">{t("login.whatDesc")}</p>
+        </div>
       </div>
     </div>
   );

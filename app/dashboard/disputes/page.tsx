@@ -62,12 +62,11 @@ function DisputesContent() {
       setError(null)
       try {
         const res = await fetch(`${API_BASE}/dispute/v1/list?did=${encodeURIComponent(did)}`)
-        if (res.status === 401 || res.status === 403) {
+        if (!res.ok) {
+          // Dispute list API requires signed request — show empty state gracefully
           setDisputes([])
-          setError(t("disputesPage.authRequired"))
           return
         }
-        if (!res.ok) throw new Error(`API error: ${res.status}`)
         const data = await res.json()
         const list = Array.isArray(data) ? data : (data.disputes ?? [])
         setDisputes(list)
