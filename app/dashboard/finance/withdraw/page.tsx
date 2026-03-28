@@ -137,7 +137,7 @@ function WithdrawContent() {
                 </span>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Use CLI: {cliCommand}</p>
+                <p>{t("withdrawPage.cliHint")} {cliCommand}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>

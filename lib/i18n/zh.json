@@ -212,6 +212,7 @@
     "destAddress": "目标地址",
     "evmHint": "输入有效的 EVM 地址 (0x...)",
     "withdrawBtn": "提现",
+    "cliHint": "使用 CLI：",
     "warning": "警告",
     "warningText": "提现将在链上处理。请确认目标地址。交易提交后不可撤销。"
   },

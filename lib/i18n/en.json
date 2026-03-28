@@ -212,6 +212,7 @@
     "destAddress": "Destination Address",
     "evmHint": "Enter a valid EVM address (0x...)",
     "withdrawBtn": "Withdraw",
+    "cliHint": "Use CLI:",
     "warning": "Warning",
     "warningText": "Withdrawals are processed on-chain. Please verify the destination address. Transactions cannot be reversed once submitted."
   },
