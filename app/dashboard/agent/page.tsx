@@ -56,20 +56,16 @@ function AgentContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
 
-  if (!did) {
-    return (
-      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
-      </div>
-    )
-  }
-
   const [agent, setAgent] = useState<Agent | null>(null)
   const [trustHistory, setTrustHistory] = useState<TrustEvent[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!did) {
+      setLoading(false)
+      return
+    }
     async function fetchData() {
       setLoading(true)
       setError(null)
@@ -98,6 +94,22 @@ function AgentContent() {
     fetchData()
   }, [did])
 
+  if (!did) {
+    return (
+      <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
+        <h1 className="text-2xl font-semibold">Agent Profile</h1>
+        <p className="text-muted-foreground">
+          Enter a DID to view an agent profile, or{' '}
+          <a href="/login" className="text-primary underline underline-offset-4">log in</a>{' '}
+          to view your own.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Append <code className="bg-muted px-1 rounded">?did=did:atel:...</code> to the URL to look up any agent.
+        </p>
+      </div>
+    )
+  }
+
   if (loading) {
     return (
       <div className="px-4 lg:px-6 py-6">
@@ -121,7 +133,7 @@ function AgentContent() {
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">My Agent</h1>
+      <h1 className="text-2xl font-semibold">Agent Profile</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Agent Info */}

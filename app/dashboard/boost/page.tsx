@@ -63,24 +63,20 @@ function BoostContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
 
-  if (!did) {
-    return (
-      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
-      </div>
-    )
-  }
-
   const [boostStatus, setBoostStatus] = useState<BoostStatus | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!did) {
+      setLoading(false)
+      return
+    }
     async function fetchData() {
       setLoading(true)
       setError(null)
       try {
-        const res = await fetch(`${API_BASE}/boost/v1/status/${encodeURIComponent(did)}`)
+        const res = await fetch(`${API_BASE}/boost/v1/status/${encodeURIComponent(did!)}`)
         if (res.ok) {
           const data = await res.json()
           setBoostStatus(data)
@@ -116,7 +112,16 @@ function BoostContent() {
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
       <h1 className="text-2xl font-semibold">Boost</h1>
 
-      {/* Current Boost Status */}
+      {!did && (
+        <p className="text-muted-foreground">
+          Viewing public boost pricing. To check your boost status, append{' '}
+          <code className="bg-muted px-1 rounded">?did=did:atel:...</code> to the URL or{' '}
+          <a href="/login" className="text-primary underline underline-offset-4">log in</a>.
+        </p>
+      )}
+
+      {/* Current Boost Status — only when DID is provided */}
+      {did && (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -154,6 +159,7 @@ function BoostContent() {
           )}
         </CardContent>
       </Card>
+      )}
 
       {/* Requirements */}
       <Card>

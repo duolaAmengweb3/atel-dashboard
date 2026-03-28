@@ -54,14 +54,6 @@ function TrustContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
 
-  if (!did) {
-    return (
-      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
-      </div>
-    )
-  }
-
   const [trustScore, setTrustScore] = useState(0)
   const [trustHistory, setTrustHistory] = useState<TrustEvent[]>([])
   const [points, setPoints] = useState<PointsSummary | null>(null)
@@ -69,6 +61,10 @@ function TrustContent() {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!did) {
+      setLoading(false)
+      return
+    }
     async function fetchData() {
       setLoading(true)
       setError(null)
@@ -110,6 +106,22 @@ function TrustContent() {
     ? trustHistory.slice(0, 5).reduce((sum, e) => sum + (e.delta ?? 0), 0)
     : 0
   const trendUp = recentDelta >= 0
+
+  if (!did) {
+    return (
+      <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
+        <h1 className="text-2xl font-semibold">Trust & Points</h1>
+        <p className="text-muted-foreground">
+          Enter a DID to view trust history, or{' '}
+          <a href="/login" className="text-primary underline underline-offset-4">log in</a>{' '}
+          to view your own.
+        </p>
+        <p className="text-sm text-muted-foreground">
+          Append <code className="bg-muted px-1 rounded">?did=did:atel:...</code> to the URL to look up any agent.
+        </p>
+      </div>
+    )
+  }
 
   if (loading) {
     return (

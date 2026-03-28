@@ -35,14 +35,6 @@ function MarketplaceContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
 
-  if (!did) {
-    return (
-      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
-      </div>
-    )
-  }
-
   const [allOffers, setAllOffers] = useState<Offer[]>([])
   const [myOffers, setMyOffers] = useState<Offer[]>([])
   const [loadingAll, setLoadingAll] = useState(true)
@@ -50,6 +42,7 @@ function MarketplaceContent() {
   const [errorAll, setErrorAll] = useState<string | null>(null)
   const [errorMy, setErrorMy] = useState<string | null>(null)
 
+  // Browse offers is public — always fetch
   useEffect(() => {
     async function fetchAllOffers() {
       setLoadingAll(true)
@@ -66,12 +59,20 @@ function MarketplaceContent() {
         setLoadingAll(false)
       }
     }
+    fetchAllOffers()
+  }, [])
 
+  // My Offers requires a DID
+  useEffect(() => {
+    if (!did) {
+      setLoadingMy(false)
+      return
+    }
     async function fetchMyOffers() {
       setLoadingMy(true)
       setErrorMy(null)
       try {
-        const res = await fetch(`${API_BASE}/trade/v1/offers?did=${encodeURIComponent(did)}`)
+        const res = await fetch(`${API_BASE}/trade/v1/offers?did=${encodeURIComponent(did!)}`)
         if (!res.ok) throw new Error(`API error: ${res.status}`)
         const data = await res.json()
         const list = Array.isArray(data) ? data : (data.offers ?? [])
@@ -82,8 +83,6 @@ function MarketplaceContent() {
         setLoadingMy(false)
       }
     }
-
-    fetchAllOffers()
     fetchMyOffers()
   }, [did])
 
@@ -94,7 +93,7 @@ function MarketplaceContent() {
       <Tabs defaultValue="browse">
         <TabsList>
           <TabsTrigger value="browse">Browse Offers</TabsTrigger>
-          <TabsTrigger value="my">My Offers</TabsTrigger>
+          {did && <TabsTrigger value="my">My Offers</TabsTrigger>}
         </TabsList>
 
         <TabsContent value="browse">

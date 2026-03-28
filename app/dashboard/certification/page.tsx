@@ -41,14 +41,6 @@ function CertificationContent() {
   const searchParams = useSearchParams()
   const did = getDID(searchParams)
 
-  if (!did) {
-    return (
-      <div className="px-4 lg:px-6 py-6 text-muted-foreground">
-        Please <a href="/login" className="text-primary underline underline-offset-4">log in</a> or add <code className="bg-muted px-1 rounded">?did=your-did</code> to the URL.
-      </div>
-    )
-  }
-
   const [certStatus, setCertStatus] = useState<CertStatus | null>(null)
   const [requirements, setRequirements] = useState<CertRequirements | null>(null)
   const [trustScore, setTrustScore] = useState(0)
@@ -60,25 +52,37 @@ function CertificationContent() {
       setLoading(true)
       setError(null)
       try {
-        const [certRes, reqRes, agentRes] = await Promise.allSettled([
-          fetch(`${API_BASE}/cert/v1/status/${encodeURIComponent(did)}`),
+        // Requirements are always public; cert status + agent need a DID
+        const fetches: Promise<Response>[] = [
           fetch(`${API_BASE}/cert/v1/requirements`),
-          fetch(`${API_BASE}/registry/v1/agent/${encodeURIComponent(did)}`),
-        ])
-
-        if (certRes.status === 'fulfilled' && certRes.value.ok) {
-          const data = await certRes.value.json()
-          setCertStatus(data)
+        ]
+        if (did) {
+          fetches.push(
+            fetch(`${API_BASE}/cert/v1/status/${encodeURIComponent(did)}`),
+            fetch(`${API_BASE}/registry/v1/agent/${encodeURIComponent(did)}`),
+          )
         }
+        const results = await Promise.allSettled(fetches)
+        const reqRes = results[0]
 
         if (reqRes.status === 'fulfilled' && reqRes.value.ok) {
           const data = await reqRes.value.json()
           setRequirements(data)
         }
 
-        if (agentRes.status === 'fulfilled' && agentRes.value.ok) {
-          const agent = await agentRes.value.json()
-          setTrustScore(agent.trustScore ?? agent.trust_score ?? 0)
+        if (did) {
+          const certRes = results[1]
+          const agentRes = results[2]
+
+          if (certRes.status === 'fulfilled' && certRes.value.ok) {
+            const data = await certRes.value.json()
+            setCertStatus(data)
+          }
+
+          if (agentRes.status === 'fulfilled' && agentRes.value.ok) {
+            const agent = await agentRes.value.json()
+            setTrustScore(agent.trustScore ?? agent.trust_score ?? 0)
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load data')
@@ -112,14 +116,23 @@ function CertificationContent() {
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">
       <h1 className="text-2xl font-semibold">Certification</h1>
 
-      {/* Current Status */}
+      {!did && (
+        <p className="text-muted-foreground">
+          Viewing public certification requirements. To check a specific agent, append{' '}
+          <code className="bg-muted px-1 rounded">?did=did:atel:...</code> to the URL or{' '}
+          <a href="/login" className="text-primary underline underline-offset-4">log in</a>.
+        </p>
+      )}
+
+      {/* Current Status — only when DID is provided */}
+      {did && (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <IconCertificate className="h-5 w-5" />
             Current Status
           </CardTitle>
-          <CardDescription>Your certification status on the ATEL network</CardDescription>
+          <CardDescription>Certification status on the ATEL network</CardDescription>
         </CardHeader>
         <CardContent>
           {hasCert ? (
@@ -164,19 +177,22 @@ function CertificationContent() {
           )}
         </CardContent>
       </Card>
+      )}
 
-      {/* Trust Score Reference */}
+      {/* Trust Score Reference — only when DID is provided */}
+      {did && (
       <Card>
         <CardHeader>
-          <CardTitle>Your Trust Score</CardTitle>
+          <CardTitle>Trust Score</CardTitle>
           <CardDescription>Current trust score for certification eligibility</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="text-4xl font-bold tabular-nums">{trustScore.toFixed(2)}</div>
         </CardContent>
       </Card>
+      )}
 
-      {/* Requirements */}
+      {/* Requirements — always visible */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -200,13 +216,15 @@ function CertificationContent() {
                   {requirements?.certified?.fee ?? '$50/yr'}
                 </span>
               </div>
+              {did && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Your Score</span>
                 <Badge variant={trustScore >= (requirements?.certified?.trustScore ?? 65) ? 'default' : 'destructive'}>
                   {trustScore.toFixed(2)}
                 </Badge>
               </div>
-              {!hasCert && (
+              )}
+              {did && !hasCert && (
                 <div className="pt-2">
                   <Button
                     variant="outline"
@@ -244,13 +262,15 @@ function CertificationContent() {
                   {requirements?.enterprise?.fee ?? '$500/yr'}
                 </span>
               </div>
+              {did && (
               <div className="flex justify-between items-center">
                 <span className="text-sm text-muted-foreground">Your Score</span>
                 <Badge variant={trustScore >= (requirements?.enterprise?.trustScore ?? 80) ? 'default' : 'destructive'}>
                   {trustScore.toFixed(2)}
                 </Badge>
               </div>
-              {!hasCert && (
+              )}
+              {did && !hasCert && (
                 <div className="pt-2">
                   <Button
                     variant="outline"
