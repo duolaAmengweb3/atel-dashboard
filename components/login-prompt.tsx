@@ -3,6 +3,7 @@
 import { useI18n } from "@/lib/i18n/context"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { DidSearch } from "@/components/did-search"
 
 export function LoginPrompt() {
   const { t } = useI18n()
@@ -39,9 +40,9 @@ export function LoginPrompt() {
             </div>
           </div>
 
-          <p className="text-xs text-muted-foreground text-center">
-            {t("loginPrompt.didHint")} <code className="bg-muted px-1.5 py-0.5 rounded text-foreground">?did=did:atel:...</code>
-          </p>
+          <div className="w-full border-t pt-4">
+            <DidSearch />
+          </div>
         </CardContent>
       </Card>
     </div>

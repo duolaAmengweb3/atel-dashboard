@@ -51,20 +51,21 @@ function getExplorerUrl(chain?: string, txHash?: string): string | null {
 }
 
 function TransactionsContent() {
-  const auth = getStoredAuth()
   const { t } = useI18n()
-
-  if (!auth) {
-    return <LoginPrompt />
-  }
-
-  const did = auth.did
-
+  const [auth, setAuth] = useState<{ did: string; token: string } | null>(null)
+  const [mounted, setMounted] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    setMounted(true)
+    setAuth(getStoredAuth())
+  }, [])
+
+  useEffect(() => {
+    if (!auth) return
+    const did = auth.did
     async function fetchTransactions() {
       setLoading(true)
       setError(null)
@@ -81,7 +82,10 @@ function TransactionsContent() {
       }
     }
     fetchTransactions()
-  }, [did])
+  }, [auth])
+
+  if (!mounted) return null
+  if (!auth) return <LoginPrompt />
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">

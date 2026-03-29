@@ -29,21 +29,22 @@ function truncateAddress(addr: string): string {
 }
 
 function DepositContent() {
-  const auth = getStoredAuth()
   const { t } = useI18n()
-
-  if (!auth) {
-    return <LoginPrompt />
-  }
-
-  const did = auth.did
-
+  const [auth, setAuth] = useState<{ did: string; token: string } | null>(null)
+  const [mounted, setMounted] = useState(false)
   const [chains, setChains] = useState<ChainInfo[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [copiedChain, setCopiedChain] = useState<string | null>(null)
 
   useEffect(() => {
+    setMounted(true)
+    setAuth(getStoredAuth())
+  }, [])
+
+  useEffect(() => {
+    if (!auth) return
+    const did = auth.did
     async function fetchDepositInfo() {
       setLoading(true)
       setError(null)
@@ -77,7 +78,10 @@ function DepositContent() {
       }
     }
     fetchDepositInfo()
-  }, [did])
+  }, [auth])
+
+  if (!mounted) return null
+  if (!auth) return <LoginPrompt />
 
   async function copyAddress(chain: string, address: string) {
     try {

@@ -19,6 +19,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getDID } from '@/lib/auth'
+import { DidSearch } from '@/components/did-search'
 import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
@@ -117,9 +118,7 @@ function AgentContent() {
           <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a>{' '}
           {t("agent.toViewOwn")}
         </p>
-        <p className="text-sm text-muted-foreground">
-          {t("agent.appendDid")} <code className="bg-muted px-1 rounded">?did=did:atel:...</code> {t("agent.toLookup")}
-        </p>
+        <DidSearch />
       </div>
     )
   }
@@ -250,9 +249,9 @@ function AgentContent() {
               <TableBody>
                 {trustHistory.slice(0, 20).map((evt, i) => (
                   <TableRow key={i}>
-                    <TableCell className="capitalize">{evt.type}</TableCell>
-                    <TableCell className={(Number(evt.delta) || 0) >= 0 ? 'text-green-500' : 'text-red-500'}>
-                      {(Number(evt.delta) || 0) >= 0 ? '+' : ''}{(Number(evt.delta) || 0).toFixed(2)}
+                    <TableCell className="capitalize">{evt.eventType}</TableCell>
+                    <TableCell className={(Number(evt.scoreDelta) || 0) >= 0 ? 'text-green-500' : 'text-red-500'}>
+                      {(Number(evt.scoreDelta) || 0) >= 0 ? '+' : ''}{(Number(evt.scoreDelta) || 0).toFixed(2)}
                     </TableCell>
                     <TableCell>{evt.scoreAfter != null ? Number(evt.scoreAfter).toFixed(2) : '-'}</TableCell>
                     <TableCell className="text-muted-foreground text-xs">

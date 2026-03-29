@@ -25,13 +25,13 @@ export function SiteHeader() {
             {lang === "en" ? "中文" : "EN"}
           </button>
           <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
-            <a
-              href="https://atel-docs.vercel.app"
-              rel="noopener noreferrer"
-              target="_blank"
-              className="dark:text-foreground"
-            >
+            <a href="/docs" className="dark:text-foreground">
               {t("header.docs")}
+            </a>
+          </Button>
+          <Button variant="ghost" asChild size="sm" className="hidden sm:flex">
+            <a href="/" className="dark:text-foreground">
+              {t("header.home")}
             </a>
           </Button>
         </div>

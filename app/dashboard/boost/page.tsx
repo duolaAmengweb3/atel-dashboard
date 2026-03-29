@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { getDID } from '@/lib/auth'
+import { DidSearch } from '@/components/did-search'
 import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
@@ -115,12 +116,13 @@ function BoostContent() {
       <h1 className="text-2xl font-semibold">{t("boostPage.title")}</h1>
 
       {!did && (
-        <p className="text-muted-foreground">
-          {t("boostPage.viewingPublic")}{' '}
-          <code className="bg-muted px-1 rounded">?did=did:atel:...</code>{' '}
-          {t("boostPage.toUrlOr")}{' '}
-          <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a>.
-        </p>
+        <div className="flex flex-col gap-3">
+          <p className="text-muted-foreground">
+            <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a>{' '}
+            {t("boostPage.toUrlOr")}
+          </p>
+          <DidSearch />
+        </div>
       )}
 
       {did && (

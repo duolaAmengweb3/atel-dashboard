@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense } from 'react'
+import { Suspense, useEffect, useState } from 'react'
 import { LoginPrompt } from '@/components/login-prompt'
 import {
   IconRobot,
@@ -27,8 +27,14 @@ function CodeBlock({ children }: { children: string }) {
 }
 
 function SettingsContent() {
-  const auth = getStoredAuth()
   const { t } = useI18n()
+  const [auth, setAuth] = useState<{ did: string; token: string } | null>(null)
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    setAuth(getStoredAuth())
+  }, [])
 
   const AGENT_MODES = [
     {
@@ -51,9 +57,8 @@ function SettingsContent() {
     },
   ]
 
-  if (!auth) {
-    return <LoginPrompt />
-  }
+  if (!mounted) return null
+  if (!auth) return <LoginPrompt />
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-6">

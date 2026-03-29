@@ -5,7 +5,6 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { LoginPrompt } from '@/components/login-prompt'
 import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -78,15 +77,7 @@ function DisputesContent() {
 
   return (
     <div className="px-4 lg:px-6 py-6 flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">{t("disputesPage.title")}</h1>
-        <Button
-          variant="outline"
-          onClick={() => navigator.clipboard.writeText('atel dispute <orderId> quality "your reason"')}
-        >
-          {t("disputesPage.openDispute")}
-        </Button>
-      </div>
+      <h1 className="text-2xl font-semibold">{t("disputesPage.title")}</h1>
 
       {loading && <p className="text-muted-foreground">{t("disputesPage.loadingDisputes")}</p>}
       {error && <p className="text-destructive">{t("common.error")}: {error}</p>}

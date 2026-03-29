@@ -35,15 +35,9 @@ interface DepositInfo {
 }
 
 function FinanceContent() {
-  const auth = getStoredAuth()
   const { t } = useI18n()
-
-  if (!auth) {
-    return <LoginPrompt />
-  }
-
-  const did = auth.did
-
+  const [auth, setAuth] = useState<{ did: string; token: string } | null>(null)
+  const [mounted, setMounted] = useState(false)
   const [balance, setBalance] = useState<BalanceData | null>(null)
   const [depositInfo, setDepositInfo] = useState<DepositInfo | null>(null)
   const [loading, setLoading] = useState(true)
@@ -51,6 +45,13 @@ function FinanceContent() {
   const [copiedAddr, setCopiedAddr] = useState<string | null>(null)
 
   useEffect(() => {
+    setMounted(true)
+    setAuth(getStoredAuth())
+  }, [])
+
+  useEffect(() => {
+    if (!auth) return
+    const did = auth.did
     async function fetchData() {
       setLoading(true)
       setError(null)
@@ -87,7 +88,10 @@ function FinanceContent() {
       }
     }
     fetchData()
-  }, [did])
+  }, [auth])
+
+  if (!mounted) return null
+  if (!auth) return <LoginPrompt />
 
   async function copyToClipboard(text: string, key: string) {
     try {

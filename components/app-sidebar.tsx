@@ -7,16 +7,21 @@ import {
   IconArrowDown,
   IconArrowUp,
   IconChartBar,
-  IconDashboard,
+  IconCoin,
   IconFileDescription,
   IconFriends,
   IconGavel,
   IconHelp,
+  IconHeartbeat,
+  IconHome,
   IconInnerShadowTop,
   IconListDetails,
+  IconLock,
   IconMessageCircle,
+  IconNetwork,
+  IconNotebook,
   IconRocket,
-  IconSettings,
+  IconSearch,
   IconShield,
   IconShoppingCart,
   IconUsers,
@@ -68,10 +73,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       avatar: "",
     },
     navMain: [
-      { title: t("sidebar.overview"), url: "/dashboard", icon: IconDashboard },
+      { title: t("sidebar.agentNetwork"), url: "/dashboard", icon: IconNetwork },
+      { title: t("sidebar.searchAgent"), url: "/dashboard/search", icon: IconSearch },
       { title: t("sidebar.orders"), url: "/dashboard/orders", icon: IconListDetails },
       { title: t("sidebar.marketplace"), url: "/dashboard/marketplace", icon: IconShoppingCart },
-      { title: t("sidebar.myAgent"), url: "/dashboard/agent", icon: IconUsers },
       { title: t("sidebar.disputes"), url: "/dashboard/disputes", icon: IconGavel },
       { title: t("sidebar.friends"), url: "/dashboard/friends", icon: IconFriends },
       { title: t("sidebar.messages"), url: "/dashboard/messages", icon: IconMessageCircle },
@@ -83,13 +88,20 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       { title: t("sidebar.transactions"), url: "/dashboard/finance/history", icon: IconFileDescription },
     ],
     navTrust: [
+      { title: t("sidebar.myAgent"), url: "/dashboard/agent", icon: IconUsers },
       { title: t("sidebar.trustAndPoints"), url: "/dashboard/trust", icon: IconChartBar },
       { title: t("sidebar.certification"), url: "/dashboard/certification", icon: IconShield },
       { title: t("sidebar.boost"), url: "/dashboard/boost", icon: IconRocket },
     ],
+    navInfo: [
+      { title: t("sidebar.status"), url: "/dashboard/status", icon: IconHeartbeat },
+      { title: t("sidebar.pricing"), url: "/dashboard/pricing", icon: IconCoin },
+      { title: t("sidebar.whitepapers"), url: "/dashboard/whitepapers", icon: IconNotebook },
+      { title: t("sidebar.admin"), url: "/dashboard/admin", icon: IconLock },
+    ],
     navSecondary: [
-      { title: t("sidebar.settings"), url: "/dashboard/settings", icon: IconSettings },
-      { title: t("sidebar.docs"), url: "https://atel-docs.vercel.app", icon: IconHelp },
+      { title: t("sidebar.docs"), url: "/docs", icon: IconHelp },
+      { title: t("sidebar.home"), url: "/", icon: IconHome },
     ],
   }
 
@@ -114,6 +126,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} label={t("sidebar.workspace")} />
         <NavMain items={data.navFinance} label={t("sidebar.finance")} />
         <NavMain items={data.navTrust} label={t("sidebar.trust")} />
+        <NavMain items={data.navInfo} label={t("sidebar.info")} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

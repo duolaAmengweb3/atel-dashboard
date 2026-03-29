@@ -24,15 +24,9 @@ import { useI18n } from '@/lib/i18n/context'
 import { API_BASE } from '@/lib/config'
 
 function WithdrawContent() {
-  const auth = getStoredAuth()
   const { t } = useI18n()
-
-  if (!auth) {
-    return <LoginPrompt />
-  }
-
-  const did = auth.did
-
+  const [auth, setAuth] = useState<{ did: string; token: string } | null>(null)
+  const [mounted, setMounted] = useState(false)
   const [balance, setBalance] = useState<string | null>(null)
   const [loadingBalance, setLoadingBalance] = useState(true)
   const [amount, setAmount] = useState('')
@@ -40,6 +34,13 @@ function WithdrawContent() {
   const [address, setAddress] = useState('')
 
   useEffect(() => {
+    setMounted(true)
+    setAuth(getStoredAuth())
+  }, [])
+
+  useEffect(() => {
+    if (!auth) return
+    const did = auth.did
     async function fetchBalance() {
       setLoadingBalance(true)
       try {
@@ -55,7 +56,10 @@ function WithdrawContent() {
       }
     }
     fetchBalance()
-  }, [did])
+  }, [auth])
+
+  if (!mounted) return null
+  if (!auth) return <LoginPrompt />
 
   const cliCommand = chain && amount && address
     ? `atel withdraw ${amount} crypto_${chain.toLowerCase()} ${address}`

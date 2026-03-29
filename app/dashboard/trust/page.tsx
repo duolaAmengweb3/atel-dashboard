@@ -20,6 +20,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { getDID } from '@/lib/auth'
+import { DidSearch } from '@/components/did-search'
 import { useI18n } from '@/lib/i18n/context'
 
 import { API_BASE } from '@/lib/config'
@@ -107,7 +108,7 @@ function TrustContent() {
   }, [did])
 
   const recentDelta = trustHistory.length > 0
-    ? trustHistory.slice(0, 5).reduce((sum, e) => sum + (e.delta ?? 0), 0)
+    ? trustHistory.slice(0, 5).reduce((sum, e) => sum + (e.scoreDelta ?? 0), 0)
     : 0
   const trendUp = recentDelta >= 0
 
@@ -120,9 +121,7 @@ function TrustContent() {
           <a href="/login" className="text-primary underline underline-offset-4">{t("common.logIn")}</a>{' '}
           {t("trustPage.toViewOwn")}
         </p>
-        <p className="text-sm text-muted-foreground">
-          {t("trustPage.appendDid")} <code className="bg-muted px-1 rounded">?did=did:atel:...</code> {t("trustPage.toLookup")}
-        </p>
+        <DidSearch />
       </div>
     )
   }
@@ -203,7 +202,7 @@ function TrustContent() {
               <TableHeader>
                 <TableRow>
                   <TableHead>{t("common.type")}</TableHead>
-                  <TableHead>{t("trustPage.delta")}</TableHead>
+                  <TableHead>{t("trustPage.scoreDelta")}</TableHead>
                   <TableHead>{t("trustPage.scoreAfter")}</TableHead>
                   <TableHead>{t("common.date")}</TableHead>
                   <TableHead>{t("common.chain")}</TableHead>
@@ -214,9 +213,9 @@ function TrustContent() {
                   const link = explorerLink(evt.chain, evt.txHash)
                   return (
                     <TableRow key={i}>
-                      <TableCell className="capitalize">{evt.type}</TableCell>
-                      <TableCell className={(Number(evt.delta) || 0) >= 0 ? 'text-green-500' : 'text-red-500'}>
-                        {(Number(evt.delta) || 0) >= 0 ? '+' : ''}{(Number(evt.delta) || 0).toFixed(2)}
+                      <TableCell className="capitalize">{evt.eventType}</TableCell>
+                      <TableCell className={(Number(evt.scoreDelta) || 0) >= 0 ? 'text-green-500' : 'text-red-500'}>
+                        {(Number(evt.scoreDelta) || 0) >= 0 ? '+' : ''}{(Number(evt.scoreDelta) || 0).toFixed(2)}
                       </TableCell>
                       <TableCell>{evt.scoreAfter != null ? Number(evt.scoreAfter).toFixed(2) : '-'}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">

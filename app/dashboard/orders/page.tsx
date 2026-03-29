@@ -66,14 +66,10 @@ function CopyButton({ command, label, variant = "outline" }: { command: string; 
 
 function OrdersContent() {
   const searchParams = useSearchParams()
-  const did = getDID(searchParams)
-  const isAuthed = !!getStoredAuth()
   const { t } = useI18n()
-
-  if (!did) {
-    return <LoginPrompt />
-  }
-
+  const [mounted, setMounted] = useState(false)
+  const [did, setDid] = useState<string | null>(null)
+  const [isAuthed, setIsAuthed] = useState(false)
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -81,6 +77,13 @@ function OrdersContent() {
   const [statusFilter, setStatusFilter] = useState('all')
 
   useEffect(() => {
+    setMounted(true)
+    setDid(getDID(searchParams))
+    setIsAuthed(!!getStoredAuth())
+  }, [searchParams])
+
+  useEffect(() => {
+    if (!did) return
     async function fetchOrders() {
       setLoading(true)
       setError(null)
@@ -103,6 +106,9 @@ function OrdersContent() {
     }
     fetchOrders()
   }, [did])
+
+  if (!mounted) return null
+  if (!did) return <LoginPrompt />
 
   const filtered = orders.filter((o) => {
     if (roleFilter !== 'all' && o.role !== roleFilter) return false
